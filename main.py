@@ -54,7 +54,8 @@ def infer(req: InferReq):
     return FileResponse(
         path=video_path,
         status_code=201,
-        media_type="application/octet-stream"
+        media_type="application/octet-stream",
+        filename=f"{now}.mp4",
     )
 
 
