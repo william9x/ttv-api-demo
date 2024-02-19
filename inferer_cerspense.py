@@ -42,7 +42,7 @@ class CerspenseInferer:
         output_path = output_path or "./output/"
 
         # Create the pipeline once outside the loop
-        pipe = initialize_diffusion_pipeline("cerspense/zeroscope_v2_576w")
+        pipe = self.initialize_diffusion_pipeline("cerspense/zeroscope_v2_576w")
 
         # Generate video frames
         video_frames = pipe(prompt, num_inference_steps=num_inference_steps, height=height, width=width,
@@ -54,7 +54,7 @@ class CerspenseInferer:
             del pipe
             torch.cuda.empty_cache()
 
-            pipe = initialize_diffusion_pipeline("cerspense/zeroscope_v2_XL")
+            pipe = self.initialize_diffusion_pipeline("cerspense/zeroscope_v2_XL")
 
             upscaled_size = (upscaled_width, upscaled_height)
             video = [Image.fromarray((frame * 255).astype(np.uint8)).resize(upscaled_size) for frame in video_frames[0]]
@@ -67,6 +67,6 @@ class CerspenseInferer:
             torch.cuda.empty_cache()
 
             # Re-initialize the pipeline with the smaller model
-            # pipe = initialize_diffusion_pipeline("cerspense/zeroscope_v2_576w")
+            # pipe = self.initialize_diffusion_pipeline("cerspense/zeroscope_v2_576w")
 
-        return export_frames_to_video(video_frames[0], output_path)
+        return self.export_frames_to_video(video_frames[0], output_path)
