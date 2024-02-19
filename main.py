@@ -64,13 +64,12 @@ def infer(req: ZeroScopeInferReq):
 
 class AnimateLCMInferReq(BaseModel):
     prompt: str | None
-    num_inference_steps: int = 25
-    height: int = 576
-    width: int = 1024
-    num_frames: int = 30
     negative_prompt: str | None
-    guidance_scale: float = 10.0
-    strength: float = 2.0
+    num_inference_steps: int = 25
+    num_frames: int = 20
+    width: int = 512
+    height: int = 512
+    guidance_scale: float = 2.0
 
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
@@ -79,6 +78,15 @@ def infer(req: AnimateLCMInferReq):
     if lock:
         return JSONResponse(content={"message": "Server is busy"}, status_code=503)
     lock = True
+
+    if req.num_inference_steps > 25:
+        return JSONResponse(content={"message": "maximum num_inference_steps is 25"}, status_code=400)
+
+    if req.num_frames > 20:
+        return JSONResponse(content={"message": "maximum num_frames is 20"}, status_code=400)
+
+    if req.guidance_scale > 2:
+        return JSONResponse(content={"message": "maximum guidance_scale is 2.0"}, status_code=400)
 
     now = datetime.now().strftime("%m%d_%H%M%S")
     output_path = f"{os.getcwd()}/output/{now}.mp4"
@@ -91,7 +99,6 @@ def infer(req: AnimateLCMInferReq):
             num_frames=req.num_frames,
             negative_prompt=req.negative_prompt,
             guidance_scale=req.guidance_scale,
-            strength=req.strength,
             output_path=output_path,
         )
     except Exception as e:

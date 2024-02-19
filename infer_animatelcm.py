@@ -37,7 +37,6 @@ class AnimateLCMInfer:
         num_frames = int(num_frames) if num_frames is not None else 30
         negative_prompt = negative_prompt.strip() if negative_prompt is not None else None  # Convert to a single string
         guidance_scale = float(guidance_scale) if guidance_scale is not None else 10.0
-        strength = float(strength) if strength is not None else 2.0
         output_path = output_path or "./output/"
 
         # Create the pipeline once outside the loop
@@ -52,7 +51,6 @@ class AnimateLCMInfer:
             num_frames=num_frames,
             negative_prompt=negative_prompt,
             guidance_scale=guidance_scale,
-            strength=strength,
             generator=torch.Generator(device='cuda'),
         ).frames
 
