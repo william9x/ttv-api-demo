@@ -5,7 +5,7 @@ from diffusers import DiffusionPipeline, DPMSolverMultistepScheduler
 from diffusers.utils import export_to_video
 
 
-class CerspenseInferer:
+class ZeroScopeInfer:
 
     # Function to initialize the DiffusionPipeline
     def initialize_diffusion_pipeline(self, model_name, dtype=torch.float16, chunk_size=1, dim=1):
