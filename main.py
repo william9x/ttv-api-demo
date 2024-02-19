@@ -96,7 +96,8 @@ def infer(req: AnimateLCMInferReq):
         )
     except Exception as e:
         lock = False
-        return JSONResponse(content={"message": str(e)}, status_code=500)
+        print(e)
+        return JSONResponse(content={"message": "Internal Server Error"}, status_code=500)
 
     lock = False
     return FileResponse(

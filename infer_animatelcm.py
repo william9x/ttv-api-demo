@@ -54,6 +54,6 @@ class AnimateLCMInfer:
             guidance_scale=guidance_scale,
             strength=strength,
             generator=torch.Generator(device='cuda'),
-        )
+        ).frames
 
         return self.export_frames_to_video(video_frames[0], output_path)
