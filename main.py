@@ -27,7 +27,7 @@ class InferReq(BaseModel):
     guidance_scale: float = 10.0
 
 
-@app.post("/infer/cerspense", tags=["Infer"])
+@app.post("/infer/cerspense", tags=["Infer"], response_class=FileResponse)
 def infer(req: InferReq):
     global lock
     if lock:
