@@ -29,7 +29,7 @@ class AnimateLCMInfer:
 
     # Main function to generate videos
     def generate_video(self, prompt=None, num_inference_steps=None, height=None, width=None,
-                       num_frames=None, output_path=None, negative_prompt=None, guidance_scale=None):
+                       num_frames=None, output_path=None, negative_prompt=None, guidance_scale=None, strength=None):
         prompt = prompt.strip() if prompt is not None else "Space scenery"
         num_inference_steps = int(num_inference_steps) if num_inference_steps is not None else 30
         height = int(height) if height is not None else 576
@@ -37,6 +37,7 @@ class AnimateLCMInfer:
         num_frames = int(num_frames) if num_frames is not None else 30
         negative_prompt = negative_prompt.strip() if negative_prompt is not None else None  # Convert to a single string
         guidance_scale = float(guidance_scale) if guidance_scale is not None else 10.0
+        strength = float(strength) if strength is not None else 2.0
         output_path = output_path or "./output/"
 
         # Create the pipeline once outside the loop
@@ -51,6 +52,7 @@ class AnimateLCMInfer:
             num_frames=num_frames,
             negative_prompt=negative_prompt,
             guidance_scale=guidance_scale,
+            strength=strength,
             generator=torch.Generator(device='cuda'),
         )
 

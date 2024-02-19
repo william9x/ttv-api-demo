@@ -70,6 +70,7 @@ class AnimateLCMInferReq(BaseModel):
     num_frames: int = 30
     negative_prompt: str | None
     guidance_scale: float = 10.0
+    strength: float = 2.0
 
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
@@ -89,6 +90,7 @@ def infer(req: AnimateLCMInferReq):
         num_frames=req.num_frames,
         negative_prompt=req.negative_prompt,
         guidance_scale=req.guidance_scale,
+        strength=req.strength,
         output_path=output_path,
     )
 
