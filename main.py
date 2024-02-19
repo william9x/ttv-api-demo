@@ -2,12 +2,14 @@ import os
 from datetime import datetime
 
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
 from inferer_cerspense import CerspenseInferer
 
 app = FastAPI()
+
+lock = False
 
 
 class InferReq(BaseModel):
@@ -25,8 +27,12 @@ class InferReq(BaseModel):
     guidance_scale: float = 10.0
 
 
-@app.post("/infer/cerspense", tags=["Infer"], response_class=FileResponse)
+@app.post("/infer/cerspense", tags=["Infer"])
 def infer(req: InferReq):
+    global lock
+    if lock:
+        return JSONResponse(content={"message": "Server is busy"}, status_code=503)
+    lock = True
     now = datetime.now().strftime("%m%d_%H%M%S")
     output_path = f"{os.getcwd()}/output/{now}.mp4"
     video_path = CerspenseInferer().generate_video(
@@ -44,6 +50,7 @@ def infer(req: InferReq):
         negative_prompt=req.negative_prompt,
         guidance_scale=req.guidance_scale,
     )
+    lock = False
     return FileResponse(
         path=video_path,
         status_code=201,
