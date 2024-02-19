@@ -65,14 +65,9 @@ def infer(req: ZeroScopeInferReq):
 class AnimateLCMInferReq(BaseModel):
     prompt: str | None
     num_inference_steps: int = 25
-    num_upscale_steps: int = 25
     height: int = 576
     width: int = 1024
-    upscale: bool = False
-    upscaled_height: int = 576
-    upscaled_width: int = 1024
     num_frames: int = 30
-    strength: float = 0.6
     negative_prompt: str | None
     guidance_scale: float = 10.0
 
