@@ -66,7 +66,7 @@ class AnimateLCMInferReq(BaseModel):
     prompt: str | None
     negative_prompt: str | None
     num_inference_steps: int = 25
-    num_frames: int = 20
+    num_frames: int = 16
     width: int = 512
     height: int = 512
     guidance_scale: float = 2.0
