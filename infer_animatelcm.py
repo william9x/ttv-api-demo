@@ -6,10 +6,10 @@ from diffusers.utils import export_to_video
 class AnimateLCMInfer:
 
     # Function to initialize the AnimateDiffPipeline
-    def initialize_animate_diff_pipeline(self, model_name, dtype=torch.float16, chunk_size=1, dim=1):
-        print(f"Initializing the pipeline with model: {model_name}")
+    def initialize_animate_diff_pipeline(self, dtype=torch.float16, chunk_size=1, dim=1):
         adapter = MotionAdapter.from_pretrained("wangfuyun/AnimateLCM", torch_dtype=dtype)
-        pipe = AnimateDiffPipeline.from_pretrained(model_name, motion_adapter=adapter, torch_dtype=dtype)
+        pipe = AnimateDiffPipeline.from_pretrained("emilianJR/epiCRealism", motion_adapter=adapter,
+                                                   torch_dtype=dtype)
         pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
 
         pipe.load_lora_weights("wangfuyun/AnimateLCM", weight_name="sd15_lora_beta.safetensors",
@@ -40,7 +40,7 @@ class AnimateLCMInfer:
         output_path = output_path or "./output/"
 
         # Create the pipeline once outside the loop
-        pipe = self.initialize_animate_diff_pipeline("wangfuyun/AnimateLCM")
+        pipe = self.initialize_animate_diff_pipeline()
 
         # Generate video frames
         video_frames = pipe(
