@@ -82,17 +82,21 @@ def infer(req: AnimateLCMInferReq):
 
     now = datetime.now().strftime("%m%d_%H%M%S")
     output_path = f"{os.getcwd()}/output/{now}.mp4"
-    video_path = AnimateLCMInfer().generate_video(
-        prompt=req.prompt,
-        num_inference_steps=req.num_inference_steps,
-        height=req.height,
-        width=req.width,
-        num_frames=req.num_frames,
-        negative_prompt=req.negative_prompt,
-        guidance_scale=req.guidance_scale,
-        strength=req.strength,
-        output_path=output_path,
-    )
+    try:
+        video_path = AnimateLCMInfer().generate_video(
+            prompt=req.prompt,
+            num_inference_steps=req.num_inference_steps,
+            height=req.height,
+            width=req.width,
+            num_frames=req.num_frames,
+            negative_prompt=req.negative_prompt,
+            guidance_scale=req.guidance_scale,
+            strength=req.strength,
+            output_path=output_path,
+        )
+    except Exception as e:
+        lock = False
+        return JSONResponse(content={"message": str(e)}, status_code=500)
 
     lock = False
     return FileResponse(
