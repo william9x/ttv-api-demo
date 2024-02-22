@@ -1,6 +1,6 @@
 import torch
 from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler
-from diffusers.utils import export_to_video
+from diffusers.utils import export_to_video, is_xformers_available
 
 
 class AnimateLCMInfer:
@@ -8,17 +8,29 @@ class AnimateLCMInfer:
     # Function to initialize the AnimateDiffPipeline
     def initialize_animate_diff_pipeline(self, dtype=torch.float16, chunk_size=1, dim=1):
         adapter = MotionAdapter.from_pretrained("wangfuyun/AnimateLCM", torch_dtype=dtype)
-        pipe = AnimateDiffPipeline.from_pretrained("emilianJR/epiCRealism", motion_adapter=adapter,
-                                                   torch_dtype=dtype)
+        pipe = AnimateDiffPipeline.from_pretrained(
+            "emilianJR/epiCRealism",
+            motion_adapter=adapter,
+            torch_dtype=dtype
+        )
         pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
 
-        pipe.load_lora_weights("wangfuyun/AnimateLCM", weight_name="sd15_lora_beta.safetensors",
-                               adapter_name="lcm-lora")
+        pipe.load_lora_weights(
+            "wangfuyun/AnimateLCM",
+            weight_name="sd15_lora_beta.safetensors",
+            adapter_name="lcm-lora"
+        )
         pipe.set_adapters(["lcm-lora"], [0.8])
 
-        pipe.enable_model_cpu_offload()
-        pipe.enable_vae_slicing()
+        if is_xformers_available():
+            pipe.enable_xformers_memory_efficient_attention()
+
         # pipe.unet.enable_forward_chunking(chunk_size=chunk_size, dim=dim)
+        pipe.enable_vae_slicing()
+
+        # Must be last
+        pipe.enable_model_cpu_offload()
+
         return pipe
 
     # Function to export frames to a video
