@@ -104,6 +104,7 @@ def infer(req: AnimateLCMInferReq):
         print(e)
         return JSONResponse(content={"message": "Internal Server Error"}, status_code=500)
 
+    counter_2 += 1
     return FileResponse(
         path=video_path,
         status_code=201,
