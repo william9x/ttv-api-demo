@@ -29,7 +29,7 @@ class AnimateLCMInfer:
 
         # config models
         self.motion_adapter = "wangfuyun/AnimateLCM"
-        self.base_image_model = "emilianJR/epiCRealism"
+        self.base_image_model = "fp16-guy/Disney_Pixar_Cartoon_Type_A_fp16_cleaned"
 
         # config lora
         self.lora_model = "wangfuyun/AnimateLCM"
