@@ -11,6 +11,8 @@ from infer_zeroscope import ZeroScopeInfer
 app = FastAPI()
 
 lock = False
+counter = 1
+counter_2 = 1
 
 
 class ZeroScopeInferReq(BaseModel):
@@ -30,10 +32,11 @@ class ZeroScopeInferReq(BaseModel):
 
 @app.post("/infer/zeroscope", tags=["Infer"], response_class=FileResponse)
 def infer(req: ZeroScopeInferReq):
-    global lock
-    if lock:
-        return JSONResponse(content={"message": "Server is busy"}, status_code=503)
-    lock = True
+    # global lock
+    # if lock:
+    #     return JSONResponse(content={"message": "Server is busy"}, status_code=503)
+    # lock = True
+    global counter
 
     now = datetime.now().strftime("%m%d_%H%M%S")
     output_path = f"{os.getcwd()}/output/{now}.mp4"
@@ -53,7 +56,7 @@ def infer(req: ZeroScopeInferReq):
         guidance_scale=req.guidance_scale,
     )
 
-    lock = False
+    # lock = False
     return FileResponse(
         path=video_path,
         status_code=201,
@@ -74,10 +77,7 @@ class AnimateLCMInferReq(BaseModel):
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
 def infer(req: AnimateLCMInferReq):
-    global lock
-    if lock:
-        return JSONResponse(content={"message": "Server is busy"}, status_code=503)
-    lock = True
+    global counter_2
 
     if req.num_inference_steps > 25:
         return JSONResponse(content={"message": "maximum num_inference_steps is 25"}, status_code=400)
@@ -88,8 +88,7 @@ def infer(req: AnimateLCMInferReq):
     if req.guidance_scale > 2:
         return JSONResponse(content={"message": "maximum guidance_scale is 2.0"}, status_code=400)
 
-    now = datetime.now().strftime("%m%d_%H%M%S")
-    output_path = f"{os.getcwd()}/output/{now}.mp4"
+    output_path = f"{os.getcwd()}/output/animate_lcm_{counter_2}.mp4"
     try:
         video_path = AnimateLCMInfer().generate_video(
             prompt=req.prompt,
@@ -102,16 +101,14 @@ def infer(req: AnimateLCMInferReq):
             output_path=output_path,
         )
     except Exception as e:
-        lock = False
         print(e)
         return JSONResponse(content={"message": "Internal Server Error"}, status_code=500)
 
-    lock = False
     return FileResponse(
         path=video_path,
         status_code=201,
         media_type="application/octet-stream",
-        filename=f"{now}.mp4",
+        filename=f"animate_lcm_{counter_2}.mp4",
     )
 
 
