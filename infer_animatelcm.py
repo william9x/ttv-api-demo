@@ -1,32 +1,10 @@
 import torch
-from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler, PixArtAlphaPipeline, DPMSolverMultistepScheduler
+from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler
 from diffusers.utils import export_to_video, is_xformers_available
 
 
 class AnimateLCMInfer:
     def __init__(self):
-        # config dirs
-        # self.basedir = os.getcwd()
-        # self.stable_diffusion_dir = os.path.join(
-        #     self.basedir, "models", "StableDiffusion")
-        # self.motion_module_dir = os.path.join(
-        #     self.basedir, "models", "Motion_Module")
-        # self.personalized_model_dir = os.path.join(
-        #     self.basedir, "models", "DreamBooth_LoRA")
-        # self.savedir = os.path.join(
-        #     self.basedir, "samples", datetime.now().strftime("Gradio-%Y-%m-%dT%H-%M-%S"))
-        # self.savedir_sample = os.path.join(self.savedir, "sample")
-        # self.lcm_lora_path = "models/LCM_LoRA/sd15_t2v_beta_lora.safetensors"
-        # os.makedirs(self.savedir, exist_ok=True)
-
-        # self.stable_diffusion_list = []
-        # self.motion_module_list = []
-        # self.personalized_model_list = []
-
-        # self.refresh_stable_diffusion()
-        # self.refresh_motion_module()
-        # self.refresh_personalized_model()
-
         # config models
         self.motion_adapter = "wangfuyun/AnimateLCM"
         self.base_image_model = "PixArt-alpha/PixArt-XL-2-512x512"
@@ -36,8 +14,6 @@ class AnimateLCMInfer:
         self.lora_name = "sd15_lora_beta.safetensors"
         self.lora_adapter_name = "lcm-lora"
         self.lora_adapter_weight = 0.8
-
-        # self.inference_config = OmegaConf.load("configs/inference.yaml")
 
     # Function to initialize the AnimateDiffPipeline
     def initialize_animate_diff_pipeline(self, dtype=torch.float16, chunk_size=1, dim=1):
