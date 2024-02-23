@@ -4,23 +4,49 @@ from diffusers.utils import export_to_video, is_xformers_available
 
 
 class AnimateLCMInfer:
+    def __init__(self):
+        # config dirs
+        # self.basedir = os.getcwd()
+        # self.stable_diffusion_dir = os.path.join(
+        #     self.basedir, "models", "StableDiffusion")
+        # self.motion_module_dir = os.path.join(
+        #     self.basedir, "models", "Motion_Module")
+        # self.personalized_model_dir = os.path.join(
+        #     self.basedir, "models", "DreamBooth_LoRA")
+        # self.savedir = os.path.join(
+        #     self.basedir, "samples", datetime.now().strftime("Gradio-%Y-%m-%dT%H-%M-%S"))
+        # self.savedir_sample = os.path.join(self.savedir, "sample")
+        # self.lcm_lora_path = "models/LCM_LoRA/sd15_t2v_beta_lora.safetensors"
+        # os.makedirs(self.savedir, exist_ok=True)
+
+        # self.stable_diffusion_list = []
+        # self.motion_module_list = []
+        # self.personalized_model_list = []
+
+        # self.refresh_stable_diffusion()
+        # self.refresh_motion_module()
+        # self.refresh_personalized_model()
+
+        # config models
+        self.motion_adapter = "wangfuyun/AnimateLCM"
+        self.base_image_model = "wangfuyun/AnimateLCM"
+
+        # config lora
+        self.lora_model = "wangfuyun/AnimateLCM"
+        self.lora_name = "sd15_lora_beta.safetensors"
+        self.lora_adapter_name = "lcm-lora"
+        self.lora_adapter_weight = 0.8
+
+        # self.inference_config = OmegaConf.load("configs/inference.yaml")
 
     # Function to initialize the AnimateDiffPipeline
     def initialize_animate_diff_pipeline(self, dtype=torch.float16, chunk_size=1, dim=1):
-        adapter = MotionAdapter.from_pretrained("wangfuyun/AnimateLCM", torch_dtype=dtype)
-        pipe = AnimateDiffPipeline.from_pretrained(
-            "emilianJR/epiCRealism",
-            motion_adapter=adapter,
-            torch_dtype=dtype
-        )
+        adapter = MotionAdapter.from_pretrained(self.motion_adapter, torch_dtype=dtype)
+        pipe = AnimateDiffPipeline.from_pretrained(self.base_image_model, motion_adapter=adapter, torch_dtype=dtype)
         pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
 
-        pipe.load_lora_weights(
-            "wangfuyun/AnimateLCM",
-            weight_name="sd15_lora_beta.safetensors",
-            adapter_name="lcm-lora"
-        )
-        pipe.set_adapters(["lcm-lora"], [0.8])
+        pipe.load_lora_weights(self.lora_model, weight_name=self.lora_name, adapter_name=self.lora_adapter_name)
+        pipe.set_adapters([self.lora_adapter_name], [self.lora_adapter_weight])
 
         if is_xformers_available():
             pipe.enable_xformers_memory_efficient_attention()
