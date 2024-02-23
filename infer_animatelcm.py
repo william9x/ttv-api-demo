@@ -1,5 +1,5 @@
 import torch
-from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler
+from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler, PixArtAlphaPipeline, DPMSolverMultistepScheduler
 from diffusers.utils import export_to_video, is_xformers_available
 
 
@@ -42,8 +42,13 @@ class AnimateLCMInfer:
     # Function to initialize the AnimateDiffPipeline
     def initialize_animate_diff_pipeline(self, dtype=torch.float16, chunk_size=1, dim=1):
         adapter = MotionAdapter.from_pretrained(self.motion_adapter, torch_dtype=dtype)
-        pipe = AnimateDiffPipeline.from_pretrained(self.base_image_model, motion_adapter=adapter, torch_dtype=dtype)
-        pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
+
+        pipe = PixArtAlphaPipeline.from_pretrained(self.base_image_model, motion_adapter=adapter, torch_dtype=dtype)
+        pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
+        pipe.transformer = torch.compile(pipe.transformer, mode="reduce-overhead", fullgraph=True)
+
+        # pipe = AnimateDiffPipeline.from_pretrained(self.base_image_model, motion_adapter=adapter, torch_dtype=dtype)
+        # pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
 
         pipe.load_lora_weights(self.lora_model, weight_name=self.lora_name, adapter_name=self.lora_adapter_name)
         pipe.set_adapters([self.lora_adapter_name], [self.lora_adapter_weight])
