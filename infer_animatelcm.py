@@ -7,7 +7,7 @@ class AnimateLCMInfer:
     def __init__(self):
         # config models
         self.motion_adapter = "wangfuyun/AnimateLCM"
-        self.base_image_model = "PixArt-alpha/PixArt-XL-2-512x512"
+        self.base_image_model = "Yntec/ResidentCNZCartoon3D"
 
         # config lora
         self.lora_model = "wangfuyun/AnimateLCM"
