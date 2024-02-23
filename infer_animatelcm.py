@@ -29,7 +29,7 @@ class AnimateLCMInfer:
 
         # config models
         self.motion_adapter = "wangfuyun/AnimateLCM"
-        self.base_image_model = "fp16-guy/Disney_Pixar_Cartoon_Type_A_fp16_cleaned"
+        self.base_image_model = "PixArt-alpha/PixArt-XL-2-512x512"
 
         # config lora
         self.lora_model = "wangfuyun/AnimateLCM"
@@ -55,7 +55,8 @@ class AnimateLCMInfer:
         pipe.enable_vae_slicing()
 
         # Must be last
-        pipe.enable_model_cpu_offload()
+        # pipe.enable_model_cpu_offload()
+        pipe.to("cuda")
 
         return pipe
 
