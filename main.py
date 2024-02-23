@@ -12,7 +12,7 @@ app = FastAPI()
 
 lock = False
 counter = 1
-counter_2 = 1
+counter = 1
 
 
 class ZeroScopeInferReq(BaseModel):
@@ -77,7 +77,7 @@ class AnimateLCMInferReq(BaseModel):
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
 def infer(req: AnimateLCMInferReq):
-    global counter_2
+    global counter
 
     if req.num_inference_steps > 25:
         return JSONResponse(content={"message": "maximum num_inference_steps is 25"}, status_code=400)
