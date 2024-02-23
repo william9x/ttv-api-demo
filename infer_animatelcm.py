@@ -49,7 +49,6 @@ class AnimateLCMInfer:
 
         # pipe = AnimateDiffPipeline.from_pretrained(self.base_image_model, motion_adapter=adapter, torch_dtype=dtype)
         # pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
-
         # pipe.load_lora_weights(self.lora_model, weight_name=self.lora_name, adapter_name=self.lora_adapter_name)
         # pipe.set_adapters([self.lora_adapter_name], [self.lora_adapter_weight])
 
@@ -57,7 +56,7 @@ class AnimateLCMInfer:
             pipe.enable_xformers_memory_efficient_attention()
 
         # pipe.unet.enable_forward_chunking(chunk_size=chunk_size, dim=dim)
-        pipe.enable_vae_slicing()
+        # pipe.enable_vae_slicing()
 
         # Must be last
         # pipe.enable_model_cpu_offload()
