@@ -12,7 +12,7 @@ app = FastAPI()
 
 lock = False
 counter = 1
-counter = 1
+counter_2 = 1
 
 
 class ZeroScopeInferReq(BaseModel):
