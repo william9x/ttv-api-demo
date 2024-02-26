@@ -23,7 +23,6 @@ class AnimateLCMInfer:
             model_path,
             motion_adapter=adapter,
             torch_dtype=dtype,
-            variant='fp16',
         )
         pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
 
