@@ -1,5 +1,6 @@
 import os
 
+import transformers
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
@@ -7,6 +8,7 @@ from pydantic import BaseModel
 from infer_animatelcm import AnimateLCMInfer
 
 app = FastAPI()
+transformers.utils.move_cache()
 
 
 class AnimateLCMInferReq(BaseModel):
