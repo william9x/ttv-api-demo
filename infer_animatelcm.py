@@ -1,6 +1,6 @@
 import torch
 from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler
-from diffusers.utils import export_to_video, is_xformers_available
+from diffusers.utils import export_to_video
 
 
 class AnimateLCMInfer:
@@ -19,22 +19,17 @@ class AnimateLCMInfer:
                                          model_path="emilianJR/epiCRealism"):
         adapter = MotionAdapter.from_pretrained(self.motion_adapter, torch_dtype=dtype)
 
-        pipe = AnimateDiffPipeline.from_pretrained(model_path, motion_adapter=adapter, torch_dtype=dtype)
+        pipe = AnimateDiffPipeline.from_pretrained(model_path, motion_adapter=adapter, torch_dtype=dtype, variant='fp16')
         pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
 
         pipe.load_lora_weights(self.lora_model, weight_name=self.lora_name, adapter_name=self.lora_adapter_name)
 
         pipe.set_adapters([self.lora_adapter_name], [self.lora_adapter_weight])
 
-        if is_xformers_available():
-            pipe.enable_xformers_memory_efficient_attention()
-
-        # pipe.unet.enable_forward_chunking(chunk_size=chunk_size, dim=dim)
-        # pipe.enable_vae_slicing()
-
-        # Must be last
-        # pipe.enable_model_cpu_offload()
-        pipe.to("cuda")
+        # Must be in order
+        pipe.enable_model_cpu_offload()
+        pipe.enable_vae_tiling()
+        pipe.enable_xformers_memory_efficient_attention()
 
         return pipe
 
