@@ -7,7 +7,6 @@ class AnimateLCMInfer:
     def __init__(self):
         # config models
         self.motion_adapter = "wangfuyun/AnimateLCM"
-        self.base_image_model = "ksyint/ghibli_background"
 
         # config lora
         self.lora_model = "wangfuyun/AnimateLCM"
@@ -16,10 +15,11 @@ class AnimateLCMInfer:
         self.lora_adapter_weight = 0.8
 
     # Function to initialize the AnimateDiffPipeline
-    def initialize_animate_diff_pipeline(self, dtype=torch.float16, chunk_size=1, dim=1):
+    def initialize_animate_diff_pipeline(self, dtype=torch.float16, chunk_size=1, dim=1,
+                                         model_path="emilianJR/epiCRealism"):
         adapter = MotionAdapter.from_pretrained(self.motion_adapter, torch_dtype=dtype)
 
-        pipe = AnimateDiffPipeline.from_pretrained(self.base_image_model, motion_adapter=adapter, torch_dtype=dtype)
+        pipe = AnimateDiffPipeline.from_pretrained(model_path, motion_adapter=adapter, torch_dtype=dtype)
         pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
 
         pipe.load_lora_weights(self.lora_model, weight_name=self.lora_name, adapter_name=self.lora_adapter_name)
@@ -46,7 +46,8 @@ class AnimateLCMInfer:
 
     # Main function to generate videos
     def generate_video(self, prompt=None, num_inference_steps=None, height=None, width=None,
-                       num_frames=None, output_path=None, negative_prompt=None, guidance_scale=None, strength=None):
+                       num_frames=None, output_path=None, negative_prompt=None, guidance_scale=None, strength=None,
+                       model_path=None):
         prompt = prompt.strip() if prompt is not None else "Space scenery"
         num_inference_steps = int(num_inference_steps) if num_inference_steps is not None else 30
         height = int(height) if height is not None else 576
@@ -57,7 +58,7 @@ class AnimateLCMInfer:
         output_path = output_path or "./output/"
 
         # Create the pipeline once outside the loop
-        pipe = self.initialize_animate_diff_pipeline()
+        pipe = self.initialize_animate_diff_pipeline(model_path=model_path)
 
         # Generate video frames
         video_frames = pipe(

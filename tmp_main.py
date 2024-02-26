@@ -71,24 +71,11 @@ class AnimateLCMInferReq(BaseModel):
     height: int = 512
     guidance_scale: float = 2.0
     output_file_path: str | None
+    model_path: str | None
 
 
 @app.post("/api/v1/infer/animate_lcm", tags=["Infer"], response_class=JSONResponse)
 def infer(req: AnimateLCMInferReq):
-    # global lock
-    # if lock:
-    #     return JSONResponse(content={"message": "Server is busy"}, status_code=503)
-    # lock = True
-
-    # if req.num_inference_steps > 25:
-    #     return JSONResponse(content={"message": "maximum num_inference_steps is 25"}, status_code=400)
-    #
-    # if req.num_frames > 20:
-    #     return JSONResponse(content={"message": "maximum num_frames is 20"}, status_code=400)
-    #
-    # if req.guidance_scale > 2:
-    #     return JSONResponse(content={"message": "maximum guidance_scale is 2.0"}, status_code=400)
-
     if req.output_file_path is None:
         return JSONResponse(content={"message": "missing output path"}, status_code=400)
 
@@ -104,13 +91,12 @@ def infer(req: AnimateLCMInferReq):
             negative_prompt=req.negative_prompt,
             guidance_scale=req.guidance_scale,
             output_path=req.output_file_path,
+            model_path=req.model_path,
         )
     except Exception as e:
-        # lock = False
         print(e)
         return JSONResponse(content={"message": "Internal Server Error"}, status_code=500)
 
-    # lock = False
     return JSONResponse(content={"message": "Created"}, status_code=201)
 
 
