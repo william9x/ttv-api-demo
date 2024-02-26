@@ -19,18 +19,11 @@ class AnimateLCMInferReq(BaseModel):
     width: int = 512
     height: int = 512
     guidance_scale: float = 2.0
+    model_path: str | None
 
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
 def infer(req: AnimateLCMInferReq):
-    if req.num_inference_steps > 25:
-        return JSONResponse(content={"message": "maximum num_inference_steps is 25"}, status_code=400)
-
-    if req.num_frames > 20:
-        return JSONResponse(content={"message": "maximum num_frames is 20"}, status_code=400)
-
-    if req.guidance_scale > 2:
-        return JSONResponse(content={"message": "maximum guidance_scale is 2.0"}, status_code=400)
 
     output_path = f"{os.getcwd()}/output/animate_lcm.mp4"
     try:
@@ -43,6 +36,7 @@ def infer(req: AnimateLCMInferReq):
             negative_prompt=req.negative_prompt,
             guidance_scale=req.guidance_scale,
             output_path=output_path,
+            model_path=req.model_path,
         )
     except Exception as e:
         print(e)
