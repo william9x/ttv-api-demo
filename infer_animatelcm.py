@@ -19,7 +19,12 @@ class AnimateLCMInfer:
                                          model_path="emilianJR/epiCRealism"):
         adapter = MotionAdapter.from_pretrained(self.motion_adapter, torch_dtype=dtype)
 
-        pipe = AnimateDiffPipeline.from_pretrained(model_path, motion_adapter=adapter, torch_dtype=dtype, variant='fp16')
+        pipe = AnimateDiffPipeline.from_pretrained(
+            model_path,
+            motion_adapter=adapter,
+            torch_dtype=dtype,
+            variant='fp16',
+        )
         pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
 
         pipe.load_lora_weights(self.lora_model, weight_name=self.lora_name, adapter_name=self.lora_adapter_name)
