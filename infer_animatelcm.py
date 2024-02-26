@@ -10,7 +10,7 @@ class AnimateLCMInfer:
 
         # config lora
         self.lora_model = "wangfuyun/AnimateLCM"
-        self.lora_name = "sd15_lora_beta.safetensors"
+        self.lora_name = "AnimateLCM_sd15_t2v_lora.safetensors"
         self.lora_adapter_name = "lcm-lora"
         self.lora_adapter_weight = 0.8
 
