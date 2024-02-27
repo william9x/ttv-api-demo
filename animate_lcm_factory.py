@@ -7,8 +7,6 @@ from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler
 class AnimateDiffFactory:
     def __init__(self):
         # config models
-        self.dtype = torch.float16
-
         print(f"[AnimateDiffFactory] Loading motion adapter")
         self.motion_adapter = MotionAdapter.from_pretrained("wangfuyun/AnimateLCM", torch.float16)
 
@@ -23,7 +21,7 @@ class AnimateDiffFactory:
         pipe = AnimateDiffPipeline.from_pretrained(
             model_path,
             motion_adapter=self.motion_adapter,
-            torch_dtype=self.dtype,
+            torch_dtype=torch.float16,
             # max_memory={0: "8GiB"}
         )
 
