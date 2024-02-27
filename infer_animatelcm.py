@@ -21,14 +21,13 @@ class AnimateLCMInfer:
         adapter = MotionAdapter.from_pretrained(
             self.motion_adapter,
             torch_dtype=dtype,
-            max_memory=8367603712,
         )
 
         pipe = AnimateDiffPipeline.from_pretrained(
             model_path,
             motion_adapter=adapter,
             torch_dtype=dtype,
-            max_memory=8367603712,
+            max_memory={0: "8GiB", 1: "8GiB"}
         )
         pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
 
