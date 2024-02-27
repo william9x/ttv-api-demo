@@ -18,7 +18,7 @@ class AnimateLCMInferReq(BaseModel):
     height: int = 512
     guidance_scale: float = 2.0
     output_file_path: str | None
-    model_path: str | None
+    model_id: str | None
 
 
 @app.post("/api/v1/infer/animate_lcm", tags=["Infer"], response_class=JSONResponse)
