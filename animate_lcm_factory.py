@@ -7,8 +7,10 @@ from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler
 class AnimateDiffFactory:
     def __init__(self):
         # config models
-        self.motion_adapter = "wangfuyun/AnimateLCM"
         self.dtype = torch.float16
+
+        print(f"[AnimateDiffFactory] Loading motion adapter")
+        self.motion_adapter = MotionAdapter.from_pretrained("wangfuyun/AnimateLCM", torch.float16)
 
         # config lora
         self.lora_model = "wangfuyun/AnimateLCM"
@@ -17,16 +19,10 @@ class AnimateDiffFactory:
         self.lora_adapter_weight = 0.8
 
     def initialize_animate_diff_pipeline(self, model_path=None):
-        print(f"[AnimateDiffFactory] Loading motion adapter for {model_path}")
-        adapter = MotionAdapter.from_pretrained(
-            self.motion_adapter,
-            torch_dtype=self.dtype,
-        )
-
         print(f"[AnimateDiffFactory] Loading model from {model_path}")
         pipe = AnimateDiffPipeline.from_pretrained(
             model_path,
-            motion_adapter=adapter,
+            motion_adapter=self.motion_adapter,
             torch_dtype=self.dtype,
             # max_memory={0: "8GiB"}
         )
