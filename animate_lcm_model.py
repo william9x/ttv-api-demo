@@ -36,4 +36,5 @@ class ModelList:
         self._models[model_id] = Model(model_id=model_id, pipe=pipe)
 
     def get_pipe(self, mode_id):
-        return self._models.get(mode_id).pipe
+        model = self._models.get(mode_id)
+        return model.pipe
