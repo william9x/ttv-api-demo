@@ -27,7 +27,7 @@ class AnimateLCMInfer:
             model_path,
             motion_adapter=adapter,
             torch_dtype=dtype,
-            max_memory={"cuda:0": "8GiB"}
+            max_memory={0: "8GiB"}
         )
         pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
 
