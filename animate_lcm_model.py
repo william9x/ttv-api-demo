@@ -1,5 +1,3 @@
-from multiprocessing import Pool
-
 from animate_lcm_factory import AnimateDiffFactory
 
 MODEL_PATHS = [
@@ -11,19 +9,6 @@ MODEL_PATHS = [
     "anmd_van_gogh#stablediffusionapi/van-gogh-diffusion",
 ]
 
-_factory = AnimateDiffFactory()
-_models = {}
-
-
-def init_models(model_path):
-    model_id_and_path = model_path.split("#")
-    model_id = model_id_and_path[0]
-    mode_path = model_id_and_path[1]
-    print(f"Loading model ${model_id} from {mode_path}")
-
-    pipe = _factory.initialize_animate_diff_pipeline(mode_path)
-    _models[model_id] = Model(model_id=model_id, pipe=pipe)
-
 
 class Model:
     def __init__(self, model_id, pipe):
@@ -33,20 +18,22 @@ class Model:
 
 class ModelList:
     def __init__(self):
+        factory = AnimateDiffFactory()
         self._models = {}
 
-        init_models(MODEL_PATHS[0])
+        for path in MODEL_PATHS:
+            self.init_models(factory, path)
 
-        if len(MODEL_PATHS) > 1:
-            MODEL_PATHS.pop(0)
-            pool = Pool(len(MODEL_PATHS))
-            print(f"Init a pool with ${len(MODEL_PATHS)} workers")
-            pool.map(init_models, MODEL_PATHS)
-            pool.close()
-            pool.join()
-
-        self._models = _models
         print(f"Models: {self._models}")
+
+    def init_models(self, factory, model_path):
+        model_id_and_path = model_path.split("#")
+        model_id = model_id_and_path[0]
+        mode_path = model_id_and_path[1]
+        print(f"Loading model ${model_id} from {mode_path}")
+
+        pipe = factory.initialize_animate_diff_pipeline(mode_path)
+        self._models[model_id] = Model(model_id=model_id, pipe=pipe)
 
     def get_pipe(self, mode_id):
         return self._models.get(mode_id)
