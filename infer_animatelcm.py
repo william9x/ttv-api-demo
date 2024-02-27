@@ -1,5 +1,3 @@
-import os
-
 import torch
 from DeepCache import DeepCacheSDHelper
 
@@ -39,6 +37,7 @@ def compile_model(pipe):
     pipe = compile(pipe, config)
     return pipe
 
+
 class AnimateLCMInfer:
     def __init__(self):
         # config models
@@ -72,18 +71,15 @@ class AnimateLCMInfer:
         pipe.set_adapters([self.lora_adapter_name], [self.lora_adapter_weight])
 
         # Must be in order
-        # pipe.enable_model_cpu_offload()
-        # pipe.enable_vae_tiling()
-        # pipe.enable_xformers_memory_efficient_attention()
         pipe.enable_model_cpu_offload()
-        # pipe.to('cuda')
+        # pipe.enable_vae_tiling()
+        pipe.enable_xformers_memory_efficient_attention()
 
+        helper = DeepCacheSDHelper(pipe=pipe)
+        helper.set_params(cache_interval=3, cache_branch_id=0)
+        helper.enable()
 
-        # helper = DeepCacheSDHelper(pipe=pipe)
-        # helper.set_params(cache_interval=3, cache_branch_id=0)
-        # helper.enable()
-
-        pipe = compile_model(pipe)
+        # pipe = compile_model(pipe)
 
         return pipe
 
