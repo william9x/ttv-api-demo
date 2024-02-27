@@ -36,6 +36,7 @@ class AnimateLCMInfer:
         # pipe.enable_model_cpu_offload()
         # pipe.enable_vae_tiling()
         # pipe.enable_xformers_memory_efficient_attention()
+        pipe.to("cuda")
 
         return pipe
 
