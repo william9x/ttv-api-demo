@@ -80,7 +80,9 @@ class AnimateLCMInfer:
         # helper.set_params(cache_interval=3, cache_branch_id=0)
         # helper.enable()
 
-        return compile_model(pipe)
+        pipe = compile_model(pipe)
+
+        return pipe
 
     # Function to export frames to a video
     def export_frames_to_video(self, frames, output_path):
