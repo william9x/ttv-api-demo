@@ -4,12 +4,11 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
-from infer_animatelcm import AnimateLCMInfer
+from animate_lcm_model import ModelList
+from utils import generate_video
 
 app = FastAPI()
-
-
-# transformers.utils.move_cache()
+model_list = ModelList()
 
 
 class AnimateLCMInferReq(BaseModel):
@@ -20,14 +19,15 @@ class AnimateLCMInferReq(BaseModel):
     width: int = 512
     height: int = 512
     guidance_scale: float = 2.0
-    model_path: str | None
+    model_id: str | None
 
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
 def infer(req: AnimateLCMInferReq):
     output_path = f"{os.getcwd()}/output/animate_lcm.mp4"
     try:
-        video_path = AnimateLCMInfer().generate_video(
+        video_path = generate_video(
+            pipe=model_list.get_pipe(req.model_id),
             prompt=req.prompt,
             num_inference_steps=req.num_inference_steps,
             height=req.height,
@@ -36,7 +36,6 @@ def infer(req: AnimateLCMInferReq):
             negative_prompt=req.negative_prompt,
             guidance_scale=req.guidance_scale,
             output_path=output_path,
-            model_path=req.model_path,
         )
     except Exception as e:
         print(e)
