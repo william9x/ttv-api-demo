@@ -24,7 +24,7 @@ class ModelList:
         for path in MODEL_PATHS:
             self.init_models(factory, path)
 
-        print(f"Models: {self._models}")
+        print(f"------Models: {self._models}")
 
     def init_models(self, factory, model_path):
         model_id_and_path = model_path.split("#")
