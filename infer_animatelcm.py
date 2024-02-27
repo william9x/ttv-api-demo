@@ -8,10 +8,9 @@ from diffusers.utils import export_to_video
 
 from sfast.compilers.diffusion_pipeline_compiler import (compile, CompilationConfig)
 
+
 def compile_model(pipe):
     config = CompilationConfig.Default()
-
-    config.device = torch.device('cuda')
 
     # xformers and Triton are suggested for achieving best performance.
     # It might be slow for Triton to generate, compile and fine-tune kernels.
@@ -77,6 +76,8 @@ class AnimateLCMInfer:
         # pipe.enable_vae_tiling()
         # pipe.enable_xformers_memory_efficient_attention()
         pipe.to('cuda')
+        pipe.device = torch.device('cuda')
+
 
         # helper = DeepCacheSDHelper(pipe=pipe)
         # helper.set_params(cache_interval=3, cache_branch_id=0)
