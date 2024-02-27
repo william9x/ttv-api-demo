@@ -2,9 +2,9 @@ from animate_lcm_factory import AnimateDiffFactory
 
 
 class Model:
-    def __init__(self, model_id, factory, path):
+    def __init__(self, model_id, pipe):
         self.id = model_id
-        self.pipe = factory.initialize_animate_diff_pipeline(path)
+        self.pipe = pipe
 
 
 class ModelList:
@@ -21,7 +21,9 @@ class ModelList:
 
         factory = AnimateDiffFactory()
         for model_id in model_paths:
-            self._models[model_id] = Model(model_id=model_id, factory=factory, path=model_paths[model_id])
+            path = model_paths[model_id]
+            pipe = factory.initialize_animate_diff_pipeline(path)
+            self._models[model_id] = Model(model_id=model_id, pipe=pipe)
 
     def get_pipe(self, mode_id):
         return self._models.get(mode_id)
