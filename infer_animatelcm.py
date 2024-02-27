@@ -36,10 +36,10 @@ class AnimateLCMInfer:
         pipe.set_adapters([self.lora_adapter_name], [self.lora_adapter_weight])
 
         # Must be in order
-        # pipe.enable_model_cpu_offload()
+        pipe.enable_model_cpu_offload()
         # pipe.enable_vae_tiling()
         # pipe.enable_xformers_memory_efficient_attention()
-        pipe.to("cuda")
+        # pipe.to("cuda")
 
         return pipe
 
