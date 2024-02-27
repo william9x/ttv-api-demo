@@ -8,6 +8,36 @@ import xformers
 import triton
 from sfast.compilers.diffusion_pipeline_compiler import (compile, CompilationConfig)
 
+def compile_model(pipe):
+    config = CompilationConfig.Default()
+
+    # xformers and Triton are suggested for achieving best performance.
+    # It might be slow for Triton to generate, compile and fine-tune kernels.
+    try:
+        import xformers
+        config.enable_xformers = True
+    except ImportError:
+        print('xformers not installed, skip')
+    # NOTE:
+    # When GPU VRAM is insufficient or the architecture is too old, Triton might be slow.
+    # Disable Triton if you encounter this problem.
+    try:
+        import triton
+        config.enable_triton = True
+    except ImportError:
+        print('Triton not installed, skip')
+    # NOTE:
+    # CUDA Graph is suggested for small batch sizes and small resolutions to reduce CPU overhead.
+    # My implementation can handle dynamic shape with increased need for GPU memory.
+    # But when your GPU VRAM is insufficient or the image resolution is high,
+    # CUDA Graph could cause less efficient VRAM utilization and slow down the inference,
+    # especially when on Windows or WSL which has the "shared VRAM" mechanism.
+    # If you meet problems related to it, you should disable it.
+    config.enable_cuda_graph = True
+
+    pipe = compile(pipe, config)
+    return pipe
+
 class AnimateLCMInfer:
     def __init__(self):
         # config models
@@ -34,30 +64,23 @@ class AnimateLCMInfer:
             # max_memory={0: "8GiB"}
         )
         pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
+        pipe.safety_checker = None
 
         pipe.load_lora_weights(self.lora_model, weight_name=self.lora_name, adapter_name=self.lora_adapter_name)
 
         pipe.set_adapters([self.lora_adapter_name], [self.lora_adapter_weight])
 
         # Must be in order
-        pipe.enable_model_cpu_offload()
+        # pipe.enable_model_cpu_offload()
         # pipe.enable_vae_tiling()
         # pipe.enable_xformers_memory_efficient_attention()
         # pipe.to("cuda")
-
-        config = CompilationConfig.Default()
-
-        config.enable_xformers = True
-        config.enable_triton = True
-        config.enable_cuda_graph = True
-
-        pipe = compile(pipe, config)
 
         # helper = DeepCacheSDHelper(pipe=pipe)
         # helper.set_params(cache_interval=3, cache_branch_id=0)
         # helper.enable()
 
-        return pipe
+        return compile_model(pipe)
 
     # Function to export frames to a video
     def export_frames_to_video(self, frames, output_path):
