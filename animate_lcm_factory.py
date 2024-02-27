@@ -48,7 +48,7 @@ class AnimateDiffFactory:
         print(f"[AnimateDiffFactory] Optimizing model {model_path}")
         pipe.enable_model_cpu_offload()
 
-        tomesd.apply_patch(pipe, ratio=0.5)
+        # tomesd.apply_patch(pipe, ratio=0.5)
 
         helper = DeepCacheSDHelper(pipe=pipe)
         helper.set_params(cache_interval=3, cache_branch_id=0)

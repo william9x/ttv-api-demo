@@ -21,6 +21,7 @@ def generate_video(
         guidance_scale=1.5,
 ):
     # Generate video frames
+    pipe.
     video_frames = pipe(
         prompt=prompt,
         num_inference_steps=num_inference_steps,
