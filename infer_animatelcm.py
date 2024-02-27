@@ -1,6 +1,8 @@
 import torch
+
 from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler
 from diffusers.utils import export_to_video
+from transformers import CLIPTokenizer, CLIPTextModel
 
 
 class AnimateLCMInfer:
@@ -13,6 +15,19 @@ class AnimateLCMInfer:
         self.lora_name = "AnimateLCM_sd15_t2v_lora.safetensors"
         self.lora_adapter_name = "lcm-lora"
         self.lora_adapter_weight = 0.8
+
+        tokenizer = CLIPTokenizer.from_pretrained(
+            'stablediffusionapi/nuke-colormax-anime',
+            subfolder='tokenizer',
+        )
+
+        text_encoder = CLIPTextModel.from_pretrained(
+            'stablediffusionapi/nuke-colormax-anime',
+            subfolder='text_encoder',
+            use_safetensors=True,
+            torch_dtype=torch.float16,
+            variant='fp16',
+        ).to('cuda')
 
     # Function to initialize the AnimateDiffPipeline
     def initialize_animate_diff_pipeline(self, dtype=torch.float16, chunk_size=1, dim=1,
@@ -31,7 +46,7 @@ class AnimateLCMInfer:
         pipe.set_adapters([self.lora_adapter_name], [self.lora_adapter_weight])
 
         # Must be in order
-        pipe.enable_model_cpu_offload()
+        # pipe.enable_model_cpu_offload()
         # pipe.enable_vae_tiling()
         # pipe.enable_xformers_memory_efficient_attention()
 
@@ -72,3 +87,38 @@ class AnimateLCMInfer:
         ).frames
 
         return self.export_frames_to_video(video_frames[0], output_path)
+
+    def encode_prompt(selft, prompts, tokenizers, text_encoders):
+        embeddings_list = []
+
+        for prompt, tokenizer, text_encoder in zip(prompts, tokenizers, text_encoders):
+            cond_input = tokenizer(
+                prompt,
+                max_length=tokenizer.model_max_length,
+                padding='max_length',
+                truncation=True,
+                return_tensors='pt',
+            )
+
+            prompt_embeds = text_encoder(cond_input.input_ids.to('cuda'), output_hidden_states=True)
+
+            pooled_prompt_embeds = prompt_embeds[0]
+            embeddings_list.append(prompt_embeds.hidden_states[-2])
+
+        prompt_embeds = torch.concat(embeddings_list, dim=-1)
+
+        negative_prompt_embeds = torch.zeros_like(prompt_embeds)
+        negative_pooled_prompt_embeds = torch.zeros_like(pooled_prompt_embeds)
+
+        bs_embed, seq_len, _ = prompt_embeds.shape
+        prompt_embeds = prompt_embeds.repeat(1, 1, 1)
+        prompt_embeds = prompt_embeds.view(bs_embed * 1, seq_len, -1)
+
+        seq_len = negative_prompt_embeds.shape[1]
+        negative_prompt_embeds = negative_prompt_embeds.repeat(1, 1, 1)
+        negative_prompt_embeds = negative_prompt_embeds.view(1 * 1, seq_len, -1)
+
+        pooled_prompt_embeds = pooled_prompt_embeds.repeat(1, 1).view(bs_embed * 1, -1)
+        negative_pooled_prompt_embeds = negative_pooled_prompt_embeds.repeat(1, 1).view(bs_embed * 1, -1)
+
+        return prompt_embeds, negative_prompt_embeds, pooled_prompt_embeds, negative_pooled_prompt_embeds
