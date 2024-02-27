@@ -29,7 +29,7 @@ def generate_video(
         num_frames=num_frames,
         negative_prompt=negative_prompt,
         guidance_scale=guidance_scale,
-        generator=torch.Generator("cpu"),
+        generator=torch.Generator(device='cuda'),
     ).frames
 
     torch.cuda.empty_cache()
