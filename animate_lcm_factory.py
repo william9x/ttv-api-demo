@@ -9,6 +9,7 @@ class AnimateDiffFactory:
         # config models
         print(f"[AnimateDiffFactory] Loading motion adapter")
         self.motion_adapter = MotionAdapter.from_pretrained("wangfuyun/AnimateLCM", torch_dtype=torch.float16)
+        print(f"[AnimateDiffFactory] Motion adapter loaded")
 
         # config lora
         self.lora_model = "wangfuyun/AnimateLCM"
