@@ -51,10 +51,11 @@ def infer(req: AnimateLCMInferReq):
 
 if __name__ == "__main__":
     import uvicorn
+    import transformers
 
+    transformers.utils.move_cache()
     uvicorn.run(
         app,
         host="0.0.0.0",
         port=8080,
-        workers=2
     )
