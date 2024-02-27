@@ -75,8 +75,8 @@ class AnimateLCMInfer:
         # pipe.enable_model_cpu_offload()
         # pipe.enable_vae_tiling()
         # pipe.enable_xformers_memory_efficient_attention()
-        pipe.to('cuda')
-        pipe.device = torch.device('cuda')
+        pipe.enable_model_cpu_offload()
+        # pipe.to('cuda')
 
 
         # helper = DeepCacheSDHelper(pipe=pipe)
