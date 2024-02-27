@@ -32,4 +32,6 @@ def generate_video(
         generator=torch.Generator("cpu"),
     ).frames
 
+    torch.cuda.empty_cache()
+
     return export_frames_to_video(video_frames[0], output_path)
