@@ -1,6 +1,6 @@
+import tomesd
 import torch
 from DeepCache import DeepCacheSDHelper
-
 from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler
 
 
@@ -41,7 +41,8 @@ class AnimateDiffFactory:
 
         # Must be in order
         pipe.enable_model_cpu_offload()
-        pipe.enable_xformers_memory_efficient_attention()
+
+        tomesd.apply_patch(pipe, ratio=0.5)
 
         helper = DeepCacheSDHelper(pipe=pipe)
         helper.set_params(cache_interval=3, cache_branch_id=0)
