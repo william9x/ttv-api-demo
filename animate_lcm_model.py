@@ -23,7 +23,7 @@ class ModelList:
         self.factory = AnimateDiffFactory()
         self._models = {}
 
-        pool = Pool(cpu_count())
+        pool = Pool(len(MODEL_PATHS))
         print(f"Init a pool with ${cpu_count()} workers")
 
         pool.map(self.init_models, MODEL_PATHS)
