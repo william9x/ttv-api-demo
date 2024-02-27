@@ -18,24 +18,24 @@ class Model:
 
 class ModelList:
     def __init__(self):
-        self.factory = AnimateDiffFactory()
+        factory = AnimateDiffFactory()
         self._models = {}
 
         for path in MODEL_PATHS:
-            self.init_models(path)
+            self.init_models(factory, path)
         # pool = Pool(len(MODEL_PATHS))
         # print(f"Init a pool with ${cpu_count()} workers")
         # pool.map(self.init_models, MODEL_PATHS)
         # pool.close()
         # pool.join()
 
-    def init_models(self, model_path):
+    def init_models(self, factory, model_path):
         model_id_and_path = model_path.split("#")
         model_id = model_id_and_path[0]
         mode_path = model_id_and_path[1]
         print(f"Loading model ${model_id} from {mode_path}")
 
-        pipe = self.factory.initialize_animate_diff_pipeline(mode_path)
+        pipe = factory.initialize_animate_diff_pipeline(mode_path)
         self._models[model_id] = Model(model_id=model_id, pipe=pipe)
 
     def get_pipe(self, mode_id):
