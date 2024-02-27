@@ -51,9 +51,9 @@ class AnimateDiffFactory:
         # pipe.to("cuda")
         # tomesd.apply_patch(pipe, ratio=0.5)
 
-        helper = DeepCacheSDHelper(pipe=pipe)
-        helper.set_params(cache_interval=3, cache_branch_id=0)
-        helper.enable()
+        # helper = DeepCacheSDHelper(pipe=pipe)
+        # helper.set_params(cache_interval=3, cache_branch_id=0)
+        # helper.enable()
 
         print(f"[AnimateDiffFactory] Model {model_path} loaded")
         return pipe
