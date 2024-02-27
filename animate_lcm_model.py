@@ -1,5 +1,3 @@
-from multiprocessing import Pool, cpu_count
-
 from animate_lcm_factory import AnimateDiffFactory
 
 MODEL_PATHS = [
@@ -23,12 +21,13 @@ class ModelList:
         self.factory = AnimateDiffFactory()
         self._models = {}
 
-        pool = Pool(len(MODEL_PATHS))
-        print(f"Init a pool with ${cpu_count()} workers")
-
-        pool.map(self.init_models, MODEL_PATHS)
-        pool.close()
-        pool.join()
+        for path in MODEL_PATHS:
+            self.init_models(path)
+        # pool = Pool(len(MODEL_PATHS))
+        # print(f"Init a pool with ${cpu_count()} workers")
+        # pool.map(self.init_models, MODEL_PATHS)
+        # pool.close()
+        # pool.join()
 
     def init_models(self, model_path):
         model_id_and_path = model_path.split("#")
