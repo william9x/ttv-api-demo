@@ -4,6 +4,9 @@ from DeepCache import DeepCacheSDHelper
 from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler
 from diffusers.utils import export_to_video
 
+import xformers
+import triton
+from sfast.compilers.diffusion_pipeline_compiler import (compile, CompilationConfig)
 
 class AnimateLCMInfer:
     def __init__(self):
@@ -41,6 +44,14 @@ class AnimateLCMInfer:
         # pipe.enable_vae_tiling()
         # pipe.enable_xformers_memory_efficient_attention()
         # pipe.to("cuda")
+
+        config = CompilationConfig.Default()
+
+        config.enable_xformers = True
+        config.enable_triton = True
+        config.enable_cuda_graph = True
+
+        pipe = compile(pipe, config)
 
         helper = DeepCacheSDHelper(pipe=pipe)
         helper.set_params(cache_interval=3, cache_branch_id=0)
