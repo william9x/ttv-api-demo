@@ -2,7 +2,6 @@ import torch
 
 from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler
 from diffusers.utils import export_to_video
-from transformers import CLIPTokenizer, CLIPTextModel
 
 
 class AnimateLCMInfer:
@@ -15,19 +14,6 @@ class AnimateLCMInfer:
         self.lora_name = "AnimateLCM_sd15_t2v_lora.safetensors"
         self.lora_adapter_name = "lcm-lora"
         self.lora_adapter_weight = 0.8
-
-        tokenizer = CLIPTokenizer.from_pretrained(
-            'stablediffusionapi/nuke-colormax-anime',
-            subfolder='tokenizer',
-        )
-
-        text_encoder = CLIPTextModel.from_pretrained(
-            'stablediffusionapi/nuke-colormax-anime',
-            subfolder='text_encoder',
-            use_safetensors=True,
-            torch_dtype=torch.float16,
-            variant='fp16',
-        ).to('cuda')
 
     # Function to initialize the AnimateDiffPipeline
     def initialize_animate_diff_pipeline(self, dtype=torch.float16, chunk_size=1, dim=1,

@@ -1,6 +1,5 @@
 import os
 
-import transformers
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
@@ -8,7 +7,9 @@ from pydantic import BaseModel
 from infer_animatelcm import AnimateLCMInfer
 
 app = FastAPI()
-#transformers.utils.move_cache()
+
+
+# transformers.utils.move_cache()
 
 
 class AnimateLCMInferReq(BaseModel):
@@ -24,7 +25,6 @@ class AnimateLCMInferReq(BaseModel):
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
 def infer(req: AnimateLCMInferReq):
-
     output_path = f"{os.getcwd()}/output/animate_lcm.mp4"
     try:
         video_path = AnimateLCMInfer().generate_video(
