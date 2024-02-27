@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from infer_animatelcm import AnimateLCMInfer
 
 app = FastAPI()
-transformers.utils.move_cache()
+#transformers.utils.move_cache()
 
 
 class AnimateLCMInferReq(BaseModel):
