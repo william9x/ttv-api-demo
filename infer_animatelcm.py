@@ -11,6 +11,8 @@ from sfast.compilers.diffusion_pipeline_compiler import (compile, CompilationCon
 def compile_model(pipe):
     config = CompilationConfig.Default()
 
+    config.device = torch.device('cuda')
+
     # xformers and Triton are suggested for achieving best performance.
     # It might be slow for Triton to generate, compile and fine-tune kernels.
     try:
@@ -74,7 +76,7 @@ class AnimateLCMInfer:
         # pipe.enable_model_cpu_offload()
         # pipe.enable_vae_tiling()
         # pipe.enable_xformers_memory_efficient_attention()
-        pipe.to("cuda:0")
+        pipe.to('cuda')
 
         # helper = DeepCacheSDHelper(pipe=pipe)
         # helper.set_params(cache_interval=3, cache_branch_id=0)
