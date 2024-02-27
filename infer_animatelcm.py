@@ -8,8 +8,6 @@ from diffusers.utils import export_to_video
 
 from sfast.compilers.diffusion_pipeline_compiler import (compile, CompilationConfig)
 
-os.environ['CUDA_VISIBLE_DEVICES'] ='0'
-
 def compile_model(pipe):
     config = CompilationConfig.Default()
 
@@ -76,8 +74,7 @@ class AnimateLCMInfer:
         # pipe.enable_model_cpu_offload()
         # pipe.enable_vae_tiling()
         # pipe.enable_xformers_memory_efficient_attention()
-        device = torch.device("cuda")
-        pipe.to(device)
+        pipe.to("cuda:0")
 
         # helper = DeepCacheSDHelper(pipe=pipe)
         # helper.set_params(cache_interval=3, cache_branch_id=0)
