@@ -1,4 +1,5 @@
 import torch
+from DeepCache import DeepCacheSDHelper
 
 from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler
 from diffusers.utils import export_to_video
@@ -40,6 +41,10 @@ class AnimateLCMInfer:
         # pipe.enable_vae_tiling()
         # pipe.enable_xformers_memory_efficient_attention()
         # pipe.to("cuda")
+
+        helper = DeepCacheSDHelper(pipe=pipe)
+        helper.set_params(cache_interval=3, cache_branch_id=0)
+        helper.enable()
 
         return pipe
 
