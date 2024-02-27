@@ -18,7 +18,11 @@ class AnimateLCMInfer:
     # Function to initialize the AnimateDiffPipeline
     def initialize_animate_diff_pipeline(self, dtype=torch.float16, chunk_size=1, dim=1,
                                          model_path="emilianJR/epiCRealism"):
-        adapter = MotionAdapter.from_pretrained(self.motion_adapter, torch_dtype=dtype)
+        adapter = MotionAdapter.from_pretrained(
+            self.motion_adapter,
+            torch_dtype=dtype,
+            max_memory=8367603712,
+        )
 
         pipe = AnimateDiffPipeline.from_pretrained(
             model_path,
