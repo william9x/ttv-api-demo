@@ -2,9 +2,11 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from infer_animatelcm import AnimateLCMInfer
+from animate_lcm_model import ModelList
+from utils import generate_video
 
 app = FastAPI()
+model_list = ModelList()
 
 
 class AnimateLCMInferReq(BaseModel):
@@ -27,7 +29,9 @@ def infer(req: AnimateLCMInferReq):
     print(req)
     print(f"OUTPUT PATH: {req.output_file_path}")
     try:
-        video_path = AnimateLCMInfer().generate_video(
+        pipe = model_list.get_pipe(req.model_id)
+        video_path = generate_video(
+            pipe=pipe,
             prompt=req.prompt,
             num_inference_steps=req.num_inference_steps,
             height=req.height,
@@ -36,7 +40,6 @@ def infer(req: AnimateLCMInferReq):
             negative_prompt=req.negative_prompt,
             guidance_scale=req.guidance_scale,
             output_path=req.output_file_path,
-            model_path=req.model_path,
         )
     except Exception as e:
         print(e)
