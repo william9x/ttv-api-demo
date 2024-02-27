@@ -26,8 +26,9 @@ class AnimateLCMInferReq(BaseModel):
 def infer(req: AnimateLCMInferReq):
     output_path = f"{os.getcwd()}/output/animate_lcm.mp4"
     try:
+        pipe = model_list.get_pipe(req.model_id)
         video_path = generate_video(
-            pipe=model_list.get_pipe(req.model_id),
+            pipe=pipe,
             prompt=req.prompt,
             num_inference_steps=req.num_inference_steps,
             height=req.height,
