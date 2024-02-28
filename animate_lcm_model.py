@@ -1,12 +1,12 @@
 from animate_lcm_factory import AnimateDiffFactory
 
 MODEL_PATHS = [
-    # "amnd_general#runwayml/stable-diffusion-v1-5",
+    "amnd_general#runwayml/stable-diffusion-v1-5",
     "amnd_anime#stablediffusionapi/nuke-colormax-anime",
-    # "amnd_pixar#stablediffusionapi/disney-pixar-cartoon",
-    # "amnd_realistic#stablediffusionapi/realistic-vision-v51",
-    # "amnd_pixel#stablediffusionapi/stylizedpixel",
-    # "amnd_vangogh#stablediffusionapi/van-gogh-diffusion",
+    "amnd_pixar#stablediffusionapi/disney-pixar-cartoon",
+    "amnd_realistic#stablediffusionapi/realistic-vision-v51",
+    "amnd_pixel#stablediffusionapi/stylizedpixel",
+    "amnd_vangogh#stablediffusionapi/van-gogh-diffusion",
 ]
 
 
