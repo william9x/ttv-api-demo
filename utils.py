@@ -8,7 +8,7 @@ from diffusers.utils import export_to_video
 def export_frames_to_video(frames, output_path):
     tmp_path = "/tmp" + str(int(time.time())) + ".mp4"
     export_to_video(frames, output_video_path=tmp_path)
-    os.system(f"ffmpeg -i {tmp_path} -vcodec libx264 {output_path}")
+    os.system(f"ffmpeg -y -i {tmp_path} -vcodec libx264 {output_path}")
     print(f"Video generated: {output_path}")
     return output_path
 
