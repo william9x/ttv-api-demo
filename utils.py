@@ -1,15 +1,20 @@
 import os
 import time
+from datetime import datetime
 
 import torch
 from diffusers.utils import export_to_video
 
 
 def export_frames_to_video(frames, output_path):
+    print(f"Exporting to video at {datetime.now()}")
     tmp_path = "/tmp" + str(int(time.time())) + ".mp4"
     export_to_video(frames, output_video_path=tmp_path)
-    os.system(f"ffmpeg -y -i {tmp_path} -vcodec libx264 {output_path}")
-    print(f"Video generated: {output_path}")
+
+    print(f"Converting to H264 at {datetime.now()}")
+    os.system(f"ffmpeg -y -hide_banner -loglevel error -i {tmp_path} -vcodec libx264 -preset superfast {output_path}")
+
+    print(f"Video generated: {output_path} at {datetime.now()}")
     return output_path
 
 
