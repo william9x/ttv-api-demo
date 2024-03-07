@@ -4,11 +4,11 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
-from animate_lcm_model import ModelList
+from animate_lcm_factory import AnimateDiffFactory
 from utils import generate_video
 
 app = FastAPI()
-model_list = ModelList()
+factory = AnimateDiffFactory()
 
 
 class AnimateLCMInferReq(BaseModel):
@@ -26,7 +26,7 @@ class AnimateLCMInferReq(BaseModel):
 def infer(req: AnimateLCMInferReq):
     output_path = f"{os.getcwd()}/output/animate_lcm.mp4"
     try:
-        pipe = model_list.get_pipe(req.model_id)
+        pipe = factory.initialize_animate_diff_pipeline(req.model_id)
         video_path = generate_video(
             pipe=pipe,
             prompt=req.prompt,
