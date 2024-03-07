@@ -26,6 +26,10 @@ class AnimateLCMInferReq(BaseModel):
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
 def infer(req: AnimateLCMInferReq):
     global lock
+
+    if lock:
+        return JSONResponse(content={"message": "Server is busy"}, status_code=503)
+
     lock = True
     output_path = f"{os.getcwd()}/output/animate_lcm.mp4"
     try:
