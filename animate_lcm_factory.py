@@ -1,6 +1,4 @@
-import tomesd
 import torch
-from DeepCache import DeepCacheSDHelper
 from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler
 
 
@@ -28,7 +26,8 @@ class AnimateDiffFactory:
             model_path,
             motion_adapter=adapter,
             torch_dtype=self.dtype,
-            use_safetensors=None
+            use_safetensors=None,
+            clip_skip=2,
             # max_memory={0: "8GiB"}
         )
 
