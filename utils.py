@@ -29,7 +29,7 @@ def generate_video(
         num_frames=16,
         output_path=None,
         guidance_scale=1.5,
-        use_compel=False
+        use_compel=True
 ):
     # Generate video frames
     if use_compel:
