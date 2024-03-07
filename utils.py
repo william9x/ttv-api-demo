@@ -29,16 +29,33 @@ def generate_video(
         num_frames=16,
         output_path=None,
         guidance_scale=1.5,
+        use_compel=False
 ):
     # Generate video frames
-    compel = Compel(tokenizer=pipe.tokenizer, text_encoder=pipe.text_encoder, truncate_long_prompts=False, device="cuda")
-    conditioning = compel.build_conditioning_tensor(prompt)
-    neg_conditioning = compel.build_conditioning_tensor(negative_prompt)
-    [conditioning, neg_conditioning] = compel.pad_conditioning_tensors_to_same_length([conditioning, neg_conditioning])
+    if use_compel:
+        compel = Compel(tokenizer=pipe.tokenizer, text_encoder=pipe.text_encoder, truncate_long_prompts=False,
+                        device="cuda")
+        conditioning = compel.build_conditioning_tensor(prompt)
+        neg_conditioning = compel.build_conditioning_tensor(negative_prompt)
+        [conditioning, neg_conditioning] = compel.pad_conditioning_tensors_to_same_length(
+            [conditioning, neg_conditioning])
+
+        video_frames = pipe(
+            prompt_embeds=conditioning,
+            negative_prompt_embeds=neg_conditioning,
+            num_inference_steps=num_inference_steps,
+            height=height,
+            width=width,
+            num_frames=num_frames,
+            guidance_scale=guidance_scale,
+            generator=torch.Generator(),
+        ).frames
+        torch.cuda.empty_cache()
+        return export_frames_to_video(video_frames[0], output_path)
 
     video_frames = pipe(
-        prompt_embeds=conditioning,
-        negative_prompt_embeds=neg_conditioning,
+        prompt=prompt,
+        negative_prompt=negative_prompt,
         num_inference_steps=num_inference_steps,
         height=height,
         width=width,
@@ -46,7 +63,5 @@ def generate_video(
         guidance_scale=guidance_scale,
         generator=torch.Generator(),
     ).frames
-
     torch.cuda.empty_cache()
-
     return export_frames_to_video(video_frames[0], output_path)
