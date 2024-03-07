@@ -33,6 +33,7 @@ def generate_video(
 ):
     # Generate video frames
     if use_compel:
+        print("using compel")
         compel = Compel(tokenizer=pipe.tokenizer, text_encoder=pipe.text_encoder, truncate_long_prompts=False,
                         device="cuda")
         conditioning = compel.build_conditioning_tensor(prompt)
