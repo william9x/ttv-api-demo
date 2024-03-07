@@ -9,9 +9,11 @@ from utils import generate_video
 
 app = FastAPI()
 factory = AnimateDiffFactory()
+lock = False
 
 
 class AnimateLCMInferReq(BaseModel):
+    model_id: str | None
     prompt: str | None
     negative_prompt: str | None
     num_inference_steps: int = 25
@@ -19,11 +21,12 @@ class AnimateLCMInferReq(BaseModel):
     width: int = 512
     height: int = 512
     guidance_scale: float = 2.0
-    model_id: str | None
 
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
 def infer(req: AnimateLCMInferReq):
+    global lock
+    lock = True
     output_path = f"{os.getcwd()}/output/animate_lcm.mp4"
     try:
         pipe = factory.initialize_animate_diff_pipeline(req.model_id)
@@ -40,8 +43,10 @@ def infer(req: AnimateLCMInferReq):
         )
     except Exception as e:
         print(e)
+        lock = False
         return JSONResponse(content={"message": "Internal Server Error"}, status_code=500)
 
+    lock = False
     return FileResponse(
         path=video_path,
         status_code=201,
