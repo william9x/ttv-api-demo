@@ -26,8 +26,8 @@ class AnimateDiffFactory:
             model_path,
             motion_adapter=adapter,
             torch_dtype=self.dtype,
-            use_safetensors=None,
-            clip_skip=1,
+            # use_safetensors=None,
+            # clip_skip=1,
             # max_memory={0: "8GiB"}
         )
 
