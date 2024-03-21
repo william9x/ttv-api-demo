@@ -10,6 +10,15 @@ from animate_lcm_factory import AnimateDiffFactory
 from magic_prompt_model import MagicPromptModel
 from utils import generate_video
 
+
+def force_cudnn_initialization():
+    s = 32
+    dev = torch.device('cuda')
+    torch.nn.functional.conv2d(torch.zeros(s, s, s, s, device=dev), torch.zeros(s, s, s, s, device=dev))
+
+
+force_cudnn_initialization()
+
 magicPrompt = MagicPromptModel()
 factory = AnimateDiffFactory()
 app = FastAPI()
