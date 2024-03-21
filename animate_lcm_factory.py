@@ -43,9 +43,9 @@ class AnimateDiffFactory:
         # Must be in order
         print(f"[AnimateDiffFactory] Optimizing model {model_path}")
         pipe.enable_vae_slicing()
-        # pipe.enable_xformers_memory_efficient_attention()
-        pipe.enable_model_cpu_offload()
-        # pipe.to("cuda")
+        # pipe.enable_model_cpu_offload()
+        pipe.to("cuda")
+        pipe.enable_xformers_memory_efficient_attention()
         # tomesd.apply_patch(pipe, ratio=0.5)
 
         # helper = DeepCacheSDHelper(pipe=pipe)
