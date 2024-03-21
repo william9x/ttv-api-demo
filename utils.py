@@ -70,15 +70,16 @@ def generate_video(
         torch.cuda.empty_cache()
         return export_frames_to_video(video_frames[0], output_path, to_h264)
 
-    video_frames = pipe(
-        prompt=prompt,
-        negative_prompt=negative_prompt,
-        num_inference_steps=num_inference_steps,
-        height=height,
-        width=width,
-        num_frames=num_frames,
-        guidance_scale=guidance_scale,
-        generator=torch.Generator().manual_seed(seed),
-    ).frames
-    torch.cuda.empty_cache()
-    return export_frames_to_video(video_frames[0], output_path, to_h264)
+    with torch.inference_mode():
+        video_frames = pipe(
+            prompt=prompt,
+            negative_prompt=negative_prompt,
+            num_inference_steps=num_inference_steps,
+            height=height,
+            width=width,
+            num_frames=num_frames,
+            guidance_scale=guidance_scale,
+            generator=torch.Generator().manual_seed(seed),
+        ).frames
+        torch.cuda.empty_cache()
+        return export_frames_to_video(video_frames[0], output_path, to_h264)
