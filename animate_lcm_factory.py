@@ -1,5 +1,6 @@
 import torch
 from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler
+from optimum.onnxruntime import ORTStableDiffusionPipeline
 
 
 class AnimateDiffFactory:
@@ -21,10 +22,11 @@ class AnimateDiffFactory:
         )
 
         print(f"[AnimateDiffFactory] Loading model from {model_path}")
-        pipe = AnimateDiffPipeline.from_pretrained(
+        pipe = ORTStableDiffusionPipeline.from_pretrained(
             model_path,
             motion_adapter=adapter,
             torch_dtype=torch.float16,
+            export=True
         )
 
         print(f"[AnimateDiffFactory] Loading scheduler for {model_path}")
