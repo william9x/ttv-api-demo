@@ -14,8 +14,8 @@ magicPrompt = MagicPromptModel()
 factory = AnimateDiffFactory()
 app = FastAPI()
 
-
 print(f"using {torch.cuda.memory.get_allocator_backend()}")
+
 
 class AnimateLCMInferReq(BaseModel):
     model_id: str | None
