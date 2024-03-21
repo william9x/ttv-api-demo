@@ -11,10 +11,14 @@ MIN_VAL = -0x8000_0000_0000_0000
 MAX_VAL = 0xffff_ffff_ffff_ffff
 
 
-def export_frames_to_video(frames, output_path):
+def export_frames_to_video(frames, output_path: str, to_h264: bool = True):
     print(f"Exporting to video at {datetime.now()}")
+
+    if not to_h264:
+        return export_to_video(video_frames=frames, output_video_path=output_path)
+
     tmp_path = "/tmp" + str(int(time.time())) + ".mp4"
-    export_to_video(frames, output_video_path=tmp_path)
+    export_to_video(video_frames=frames, output_video_path=tmp_path)
 
     print(f"Converting to H264 at {datetime.now()}")
     os.system(f"ffmpeg -y -hide_banner -loglevel error -i {tmp_path} -vcodec libx264 -preset superfast {output_path}")
@@ -33,7 +37,8 @@ def generate_video(
         num_frames=16,
         output_path=None,
         guidance_scale=1.5,
-        use_compel=False
+        use_compel=False,
+        to_h264=True,
 ):
     # Generate video frames
     if use_compel:
@@ -56,7 +61,7 @@ def generate_video(
             generator=torch.Generator().manual_seed(random.randint(MIN_VAL, MAX_VAL)),
         ).frames
         torch.cuda.empty_cache()
-        return export_frames_to_video(video_frames[0], output_path)
+        return export_frames_to_video(video_frames[0], output_path, to_h264)
 
     video_frames = pipe(
         prompt=prompt,
@@ -69,4 +74,4 @@ def generate_video(
         generator=torch.Generator().manual_seed(random.randint(MIN_VAL, MAX_VAL)),
     ).frames
     torch.cuda.empty_cache()
-    return export_frames_to_video(video_frames[0], output_path)
+    return export_frames_to_video(video_frames[0], output_path, to_h264)
