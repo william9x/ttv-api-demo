@@ -1,10 +1,14 @@
 import os
+import random
 import time
 from datetime import datetime
 
 import torch
 from compel import Compel
 from diffusers.utils import export_to_video
+
+MIN_VAL = -0x8000_0000_0000_0000
+MAX_VAL = 0xffff_ffff_ffff_ffff
 
 
 def export_frames_to_video(frames, output_path):
@@ -49,7 +53,7 @@ def generate_video(
             width=width,
             num_frames=num_frames,
             guidance_scale=guidance_scale,
-            generator=torch.Generator(),
+            generator=torch.Generator("cpu").manual_seed(0),
         ).frames
         torch.cuda.empty_cache()
         return export_frames_to_video(video_frames[0], output_path)
@@ -62,7 +66,7 @@ def generate_video(
         width=width,
         num_frames=num_frames,
         guidance_scale=guidance_scale,
-        generator=torch.Generator(),
+        generator=torch.Generator().manual_seed(random.randint(MIN_VAL, MAX_VAL)),
     ).frames
     torch.cuda.empty_cache()
     return export_frames_to_video(video_frames[0], output_path)
