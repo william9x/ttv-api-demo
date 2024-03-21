@@ -53,7 +53,7 @@ def generate_video(
             width=width,
             num_frames=num_frames,
             guidance_scale=guidance_scale,
-            generator=torch.Generator("cpu").manual_seed(0),
+            generator=torch.Generator().manual_seed(random.randint(MIN_VAL, MAX_VAL)),
         ).frames
         torch.cuda.empty_cache()
         return export_frames_to_video(video_frames[0], output_path)

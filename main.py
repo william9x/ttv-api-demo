@@ -5,10 +5,12 @@ from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
 from animate_lcm_factory import AnimateDiffFactory
+from magic_prompt_model import MagicPromptModel
 from utils import generate_video
 
-app = FastAPI()
+magicPrompt = MagicPromptModel()
 factory = AnimateDiffFactory()
+app = FastAPI()
 lock = False
 
 
@@ -57,6 +59,28 @@ def infer(req: AnimateLCMInferReq):
         media_type="application/octet-stream",
         filename=f"animate_lcm.mp4",
     )
+
+
+class MagicPromptInferReq(BaseModel):
+    prompt: str = ""
+    max_length: int = 77
+    num_return_sequences: int = 4
+    seed: int | None = None
+
+
+@app.post("/infer/magic_prompt", tags=["Infer"], response_class=JSONResponse)
+def infer(req: MagicPromptInferReq):
+    try:
+        response = magicPrompt.generate(
+            prompt=req.prompt,
+            max_length=req.max_length,
+            num_return_sequences=req.num_return_sequences,
+            seed=req.seed,
+        )
+        return JSONResponse(content={"new_prompt": response}, status_code=200)
+    except Exception as e:
+        print(e)
+        return JSONResponse(content={"message": "Internal Server Error"}, status_code=500)
 
 
 if __name__ == "__main__":
