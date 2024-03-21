@@ -80,8 +80,8 @@ def infer(req: MagicPromptInferReq):
             seed=req.seed if req.seed != 0 else None,
         )
         end_time = time.time()
-        duration = end_time - start_time
-        return JSONResponse(content={"took": f"{duration}ms", "new_prompt": response}, status_code=200)
+        duration = round(end_time - start_time, 3)
+        return JSONResponse(content={"took": f"{duration} seconds", "new_prompt": response}, status_code=200)
     except Exception as e:
         print(e)
         return JSONResponse(content={"message": "Internal Server Error"}, status_code=500)
