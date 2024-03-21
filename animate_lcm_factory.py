@@ -54,7 +54,6 @@ class AnimateDiffFactory:
         # helper.enable()
 
         pipe.enable_xformers_memory_efficient_attention()
-        pipe.set
 
         print(f"[AnimateDiffFactory] Model {model_path} loaded")
         return pipe
