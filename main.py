@@ -9,10 +9,11 @@ from animate_lcm_factory import AnimateDiffFactory
 from magic_prompt_model import MagicPromptModel
 from utils import generate_video
 
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "garbage_collection_threshold:0.6,max_split_size_mb:512,backend:cudaMallocAsync"
+
 magicPrompt = MagicPromptModel()
 factory = AnimateDiffFactory()
 app = FastAPI()
-lock = False
 
 
 class AnimateLCMInferReq(BaseModel):
@@ -29,12 +30,6 @@ class AnimateLCMInferReq(BaseModel):
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
 def infer(req: AnimateLCMInferReq):
-    global lock
-
-    if lock:
-        return JSONResponse(content={"message": "Server is busy"}, status_code=503)
-
-    lock = True
     output_path = f"{os.getcwd()}/output/animate_lcm.mp4"
     try:
         pipe = factory.initialize_animate_diff_pipeline(req.model_id)
@@ -53,10 +48,8 @@ def infer(req: AnimateLCMInferReq):
         )
     except Exception as e:
         print(e)
-        lock = False
         return JSONResponse(content={"message": "Internal Server Error"}, status_code=500)
 
-    lock = False
     return FileResponse(
         path=video_path,
         status_code=201,

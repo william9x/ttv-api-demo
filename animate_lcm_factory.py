@@ -26,9 +26,7 @@ class AnimateDiffFactory:
             model_path,
             motion_adapter=adapter,
             torch_dtype=self.dtype,
-            # use_safetensors=None,
-            # clip_skip=1,
-            # max_memory={0: "8GiB"}
+            max_memory={0: "8GiB"}
         )
 
         print(f"[AnimateDiffFactory] Loading scheduler for {model_path}")
@@ -54,6 +52,9 @@ class AnimateDiffFactory:
         # helper = DeepCacheSDHelper(pipe=pipe)
         # helper.set_params(cache_interval=3, cache_branch_id=0)
         # helper.enable()
+
+        pipe.enable_xformers_memory_efficient_attention()
+        pipe.set
 
         print(f"[AnimateDiffFactory] Model {model_path} loaded")
         return pipe

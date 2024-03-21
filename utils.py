@@ -46,8 +46,12 @@ def generate_video(
     # Generate video frames
     if use_compel:
         print("using compel")
-        compel = Compel(tokenizer=pipe.tokenizer, text_encoder=pipe.text_encoder, truncate_long_prompts=False,
-                        device="cpu")
+        compel = Compel(
+            tokenizer=pipe.tokenizer,
+            text_encoder=pipe.text_encoder,
+            truncate_long_prompts=False,
+            device="cpu"
+        )
         conditioning = compel.build_conditioning_tensor(prompt)
         neg_conditioning = compel.build_conditioning_tensor(negative_prompt)
         [conditioning, neg_conditioning] = compel.pad_conditioning_tensors_to_same_length(
