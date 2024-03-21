@@ -37,7 +37,7 @@ class MagicPromptModel:
         seed = seed if seed else random.randint(100, 1000000)
         set_seed(seed)
 
-        max_length = max_length if max_length else (len(prompt) + random.randint(60, 90))
+        max_length = (max_length - len(prompt)) if max_length else (len(prompt) + random.randint(60, 90))
 
         response = self.pipe(
             prompt,
