@@ -78,7 +78,7 @@ def infer(req: MagicPromptInferReq):
         start_time = time.time()
         response = magicPrompt.generate(
             prompt=req.prompt,
-            max_length=req.max_length,
+            max_length=None,
             num_return_sequences=req.num_return_sequences,
             seed=req.seed if req.seed != 0 else None,
         )

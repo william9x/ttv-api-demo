@@ -1,5 +1,6 @@
 import random
 
+import torch
 from transformers import pipeline, set_seed, Pipeline
 
 
@@ -17,7 +18,8 @@ class MagicPromptModel:
 
     def initialize_pipeline(self) -> Pipeline:
         print(f"[MagicPromptFactory] Loading motion adapter for {self.model}")
-        return pipeline(task=self.task, model=self.model, tokenizer=self.tokenizer)
+        return pipeline(task=self.task, model=self.model, tokenizer=self.tokenizer, device="cuda",
+                        torch_dtype=torch.float16)
 
     def generate(self,
                  prompt: str = None,
