@@ -1,4 +1,5 @@
 import os
+import time
 
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
@@ -71,13 +72,16 @@ class MagicPromptInferReq(BaseModel):
 @app.post("/infer/magic_prompt", tags=["Infer"], response_class=JSONResponse)
 def infer(req: MagicPromptInferReq):
     try:
+        start_time = time.time()
         response = magicPrompt.generate(
             prompt=req.prompt,
             max_length=req.max_length,
             num_return_sequences=req.num_return_sequences,
             seed=req.seed,
         )
-        return JSONResponse(content={"new_prompt": response}, status_code=200)
+        end_time = time.time()
+        duration = end_time - start_time
+        return JSONResponse(content={"took": f"{duration}ms", "new_prompt": response}, status_code=200)
     except Exception as e:
         print(e)
         return JSONResponse(content={"message": "Internal Server Error"}, status_code=500)
