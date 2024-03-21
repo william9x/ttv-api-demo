@@ -6,7 +6,6 @@ class AnimateDiffFactory:
     def __init__(self):
         # config models
         self.motion_adapter = "wangfuyun/AnimateLCM"
-        self.dtype = torch.float16
 
         # config lora
         self.lora_model = "wangfuyun/AnimateLCM"
@@ -18,15 +17,15 @@ class AnimateDiffFactory:
         print(f"[AnimateDiffFactory] Loading motion adapter for {model_path}")
         adapter = MotionAdapter.from_pretrained(
             self.motion_adapter,
-            torch_dtype=self.dtype,
+            torch_dtype=torch.float16,
         )
 
         print(f"[AnimateDiffFactory] Loading model from {model_path}")
         pipe = AnimateDiffPipeline.from_pretrained(
             model_path,
             motion_adapter=adapter,
-            torch_dtype=self.dtype,
-            max_memory={0: "8GiB"}
+            torch_dtype=torch.float16,
+            # max_memory={0: "8GiB"}
         )
 
         print(f"[AnimateDiffFactory] Loading scheduler for {model_path}")
@@ -53,7 +52,7 @@ class AnimateDiffFactory:
         # helper.set_params(cache_interval=3, cache_branch_id=0)
         # helper.enable()
 
-        pipe.enable_xformers_memory_efficient_attention()
+        # pipe.enable_xformers_memory_efficient_attention()
 
         print(f"[AnimateDiffFactory] Model {model_path} loaded")
         return pipe
