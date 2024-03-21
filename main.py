@@ -1,7 +1,7 @@
 import os
 import time
 
-import torch.cuda.memory
+import torch._dynamo
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
@@ -10,14 +10,7 @@ from animate_lcm_factory import AnimateDiffFactory
 from magic_prompt_model import MagicPromptModel
 from utils import generate_video
 
-
-def force_cudnn_initialization():
-    s = 32
-    dev = torch.device('cuda')
-    torch.nn.functional.conv2d(torch.zeros(s, s, s, s, device=dev), torch.zeros(s, s, s, s, device=dev))
-
-
-force_cudnn_initialization()
+torch._dynamo.config.suppress_errors = True
 
 magicPrompt = MagicPromptModel()
 factory = AnimateDiffFactory()
