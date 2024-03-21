@@ -41,7 +41,7 @@ class MagicPromptModel:
 
         response = self.pipe(
             prompt,
-            max_length=max_length,
+            max_new_tokens=max_length,
             num_return_sequences=num_return_sequences
         )
         response_list = []
