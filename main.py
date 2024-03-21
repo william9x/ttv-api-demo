@@ -1,7 +1,6 @@
 import os
 import time
 
-import torch._dynamo
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
@@ -9,8 +8,6 @@ from pydantic import BaseModel
 from animate_lcm_factory import AnimateDiffFactory
 from magic_prompt_model import MagicPromptModel
 from utils import generate_video
-
-torch._dynamo.config.suppress_errors = True
 
 magicPrompt = MagicPromptModel()
 factory = AnimateDiffFactory()
