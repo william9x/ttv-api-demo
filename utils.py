@@ -37,9 +37,12 @@ def generate_video(
         num_frames=16,
         output_path=None,
         guidance_scale=1.5,
+        seed=None,
         use_compel=False,
         to_h264=True,
 ):
+    seed = seed if seed else random.randint(MIN_VAL, MAX_VAL)
+
     # Generate video frames
     if use_compel:
         print("using compel")
@@ -58,7 +61,7 @@ def generate_video(
             width=width,
             num_frames=num_frames,
             guidance_scale=guidance_scale,
-            generator=torch.Generator().manual_seed(random.randint(MIN_VAL, MAX_VAL)),
+            generator=torch.Generator().manual_seed(seed),
         ).frames
         torch.cuda.empty_cache()
         return export_frames_to_video(video_frames[0], output_path, to_h264)
@@ -71,7 +74,7 @@ def generate_video(
         width=width,
         num_frames=num_frames,
         guidance_scale=guidance_scale,
-        generator=torch.Generator().manual_seed(random.randint(MIN_VAL, MAX_VAL)),
+        generator=torch.Generator().manual_seed(seed),
     ).frames
     torch.cuda.empty_cache()
     return export_frames_to_video(video_frames[0], output_path, to_h264)

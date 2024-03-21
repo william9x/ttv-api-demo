@@ -24,6 +24,7 @@ class AnimateLCMInferReq(BaseModel):
     width: int = 512
     height: int = 512
     guidance_scale: float = 2.0
+    seed: int = 0
 
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
@@ -47,6 +48,8 @@ def infer(req: AnimateLCMInferReq):
             negative_prompt=req.negative_prompt,
             guidance_scale=req.guidance_scale,
             output_path=output_path,
+            seed=req.seed if req.seed else None,
+            to_h264=False
         )
     except Exception as e:
         print(e)
