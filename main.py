@@ -9,7 +9,7 @@ from animate_lcm_factory import AnimateDiffFactory
 from magic_prompt_model import MagicPromptModel
 from utils import generate_video
 
-os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "garbage_collection_threshold:0.6,max_split_size_mb:512,backend:cudaMallocAsync"
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "garbage_collection_threshold:0.6,max_split_size_mb:256,backend:cudaMallocAsync"
 
 magicPrompt = MagicPromptModel()
 factory = AnimateDiffFactory()
