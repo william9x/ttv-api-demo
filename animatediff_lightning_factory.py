@@ -34,12 +34,11 @@ class AnimateDiffLightningFactory:
             torch_dtype=self.dtype,
             motion_adapter=adapter,
         ).to(self.device)
-        pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, timestep_spacing="trailing", beta_schedule="linear")
-        # pipe.scheduler = EulerDiscreteScheduler.from_config(
-        #     pipe.scheduler.config,
-        #     timestep_spacing="trailing",
-        #     beta_schedule="linear"
-        # )
+        pipe.scheduler = EulerDiscreteScheduler.from_config(
+            pipe.scheduler.config,
+            timestep_spacing="trailing",
+            beta_schedule="linear"
+        )
 
         print(f"[AnimateDiffLightningFactory] Loading lora for {model_path}")
         if motion:
