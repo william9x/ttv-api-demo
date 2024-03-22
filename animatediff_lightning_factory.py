@@ -8,7 +8,7 @@ from safetensors.torch import load_file
 
 class AnimateDiffLightningFactory:
     def __init__(self):
-        self.device = "cpu"
+        self.device = "cuda"
         self.dtype = torch.float16
 
         # config models
