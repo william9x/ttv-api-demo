@@ -16,8 +16,8 @@ app = FastAPI()
 
 class AnimateLCMInferReq(BaseModel):
     model_id: str | None
-    prompt: str | None
-    negative_prompt: str | None
+    prompt: str | None = ""
+    negative_prompt: str | None = ""
     num_inference_steps: int = 25
     num_frames: int = 16
     width: int = 512
