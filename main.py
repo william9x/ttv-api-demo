@@ -63,7 +63,8 @@ def infer(req: AnimateLCMInferReq):
             guidance_scale=req.guidance_scale,
             output_path=output_path,
             seed=req.seed if req.seed != 0 else None,
-            to_h264=False
+            to_h264=False,
+            empty_cache=False
         )
     except Exception as e:
         print(e)
