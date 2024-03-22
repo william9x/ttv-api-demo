@@ -1,9 +1,10 @@
 from typing import Dict
 
 import torch
-from diffusers import AnimateDiffPipeline, MotionAdapter, EulerDiscreteScheduler
+from diffusers import AnimateDiffPipeline, EulerDiscreteScheduler
 from huggingface_hub import hf_hub_download
 from safetensors.torch import load_file
+from transformers import Pipeline
 
 
 class AnimateDiffLightningFactory:
@@ -28,30 +29,31 @@ class AnimateDiffLightningFactory:
             "Roll right": "guoyww/animatediff-motion-lora-rolling-clockwise",
         }
 
-    def initialize_animate_diff_pipeline(self, model_path: str = None, motion: str = None):
-        print(f"[AnimateDiffLightningFactory] Loading motion adapter for {model_path}")
-        adapter = MotionAdapter().to(self.device, self.dtype)
-        adapter.load_state_dict(load_file(hf_hub_download(self.motion_adapter, self._8step_file), device=self.device))
+        self.pipelines: Dict[str, Pipeline] = {}
 
-        print(f"[AnimateDiffLightningFactory] Loading scheduler for {model_path}")
-        pipe = AnimateDiffPipeline.from_pretrained(
-            model_path,
-            motion_adapter=adapter,
-            torch_dtype=self.dtype,
-        ).to(self.device)
+    def initialize_animate_diff_pipeline(self, model_path: str = None, motion: str = None):
+        pipe_key = f"{model_path}|{motion if motion else 'None'}"
+        if pipe_key in self.pipelines:
+            print(f"[AnimateDiffLightningFactory] Model {pipe_key} loaded")
+            return self.pipelines[pipe_key]
+
+        print(f"[AnimateDiffLightningFactory] Loading base model for {model_path}")
+        pipe = AnimateDiffPipeline.from_pretrained(model_path, torch_dtype=self.dtype).to(self.device)
         pipe.scheduler = EulerDiscreteScheduler.from_config(
             pipe.scheduler.config,
             timestep_spacing="trailing",
             beta_schedule="linear"
         )
 
-        print(f"[AnimateDiffLightningFactory] Loading lora for {model_path}")
-        pipe.unload_lora_weights()
+        print(f"[AnimateDiffLightningFactory] Loading motion adapter for {model_path}")
+        motion_adapter = load_file(hf_hub_download(self.motion_adapter, self._8step_file), device=self.device)
+        pipe.unet.load_state_dict(motion_adapter, strict=False)
 
+        print(f"[AnimateDiffLightningFactory] Loading lora for {model_path}")
         motion = self.motions.get(motion, None) if motion else None
         if motion:
             pipe.load_lora_weights(self.motions.get(motion), adapter_name="motion")
-            pipe.set_adapters(["motion"], [0.7])
+            pipe.set_adapters(["motion"], [0.8])
 
         # Must be in order
         # print(f"[AnimateDiffLightningFactory] Optimizing model {model_path}")
@@ -65,5 +67,7 @@ class AnimateDiffLightningFactory:
         # helper.set_params(cache_interval=3, cache_branch_id=0)
         # helper.enable()
 
-        print(f"[AnimateDiffLightningFactory] Model {model_path} loaded")
+        self.pipelines[pipe_key] = pipe
+
+        print(f"[AnimateDiffLightningFactory] Model {pipe_key} loaded")
         return pipe
