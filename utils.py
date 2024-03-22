@@ -39,8 +39,7 @@ def generate_video(
         guidance_scale=1.5,
         seed=None,
         use_compel=False,
-        to_h264=True,
-        empty_cache: bool = True
+        to_h264=True
 ):
     seed = seed if seed else random.randint(MIN_VAL, MAX_VAL)
 
@@ -83,6 +82,5 @@ def generate_video(
             generator=torch.Generator().manual_seed(seed),
         ).frames
 
-        if empty_cache:
-            torch.cuda.empty_cache()
+        torch.cuda.empty_cache()
         return export_frames_to_video(video_frames[0], output_path, to_h264)
