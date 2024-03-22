@@ -1,7 +1,7 @@
 from typing import Dict
 
 import torch
-from diffusers import AnimateDiffPipeline, EulerDiscreteScheduler
+from diffusers import AnimateDiffPipeline, MotionAdapter, EulerDiscreteScheduler
 from huggingface_hub import hf_hub_download
 from safetensors.torch import load_file
 
@@ -36,21 +36,21 @@ class AnimateDiffLightningFactory:
             print(f"[AnimateDiffLightningFactory] Model {pipe_key} loaded")
             return self.pipelines[pipe_key]
 
+        print(f"[AnimateDiffLightningFactory] Loading motion adapter for {model_path}")
+        adapter = MotionAdapter().to(self.device, self.dtype)
+        adapter.load_state_dict(load_file(hf_hub_download(self.motion_adapter, self._8step_file), device=self.device))
+
         print(f"[AnimateDiffLightningFactory] Loading base model for {model_path}")
-        pipe = AnimateDiffPipeline.from_pretrained(model_path, torch_dtype=self.dtype).to(self.device)
+        pipe = AnimateDiffPipeline.from_pretrained(
+            model_path,
+            torch_dtype=self.dtype,
+            motion_adapter=adapter,
+        ).to(self.device)
         pipe.scheduler = EulerDiscreteScheduler.from_config(
             pipe.scheduler.config,
             timestep_spacing="trailing",
             beta_schedule="linear"
         )
-
-        print(f"[AnimateDiffLightningFactory] Loading motion adapter for {model_path}")
-        pipe.unet.load_state_dict(load_file(hf_hub_download(self.motion_adapter, self._8step_file), device=self.device),
-                                  strict=False)
-
-        pipe.unet.load_state_dict(
-            torch.load(hf_hub_download(model_path, "unet/diffusion_pytorch_model.bin"), map_location=self.device),
-            strict=False)
 
         print(f"[AnimateDiffLightningFactory] Loading lora for {model_path}")
         motion = self.motions.get(motion, None) if motion else None
