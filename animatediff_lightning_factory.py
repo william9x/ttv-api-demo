@@ -8,7 +8,7 @@ from safetensors.torch import load_file
 
 class AnimateDiffLightningFactory:
     def __init__(self):
-        self.device = "cuda"
+        self.device = "cpu"
         self.dtype = torch.float16
 
         # config models
@@ -46,9 +46,9 @@ class AnimateDiffLightningFactory:
             pipe.set_adapters(["motion"], [0.7])
 
         # Must be in order
-        # print(f"[AnimateDiffLightningFactory] Optimizing model {model_path}")
-        # pipe.enable_vae_slicing()
-        # pipe.enable_model_cpu_offload()
+        print(f"[AnimateDiffLightningFactory] Optimizing model {model_path}")
+        pipe.enable_vae_slicing()
+        pipe.enable_model_cpu_offload()
 
         # pipe.to("cuda")
         # tomesd.apply_patch(pipe, ratio=0.5)
