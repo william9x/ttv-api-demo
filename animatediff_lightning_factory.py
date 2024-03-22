@@ -16,18 +16,6 @@ class AnimateDiffLightningFactory:
         self._4step_file = f"animatediff_lightning_4step_diffusers.safetensors"
         self._8step_file = f"animatediff_lightning_8step_diffusers.safetensors"
 
-        # config lora
-        self.motions: Dict = {
-            "Zoom_in": "guoyww/animatediff-motion-lora-zoom-in",
-            "Zoom_out": "guoyww/animatediff-motion-lora-zoom-out",
-            "Tilt_up": "guoyww/animatediff-motion-lora-tilt-up",
-            "Tilt_down": "guoyww/animatediff-motion-lora-tilt-down",
-            "Pan_left": "guoyww/animatediff-motion-lora-pan-left",
-            "Pan_right": "guoyww/animatediff-motion-lora-pan-right",
-            "Roll_left": "guoyww/animatediff-motion-lora-rolling-anticlockwise",
-            "Roll_right": "guoyww/animatediff-motion-lora-rolling-clockwise",
-        }
-
         self.pipelines: Dict[str, AnimateDiffPipeline] = {}
 
     def initialize_animate_diff_pipeline(self, model_path: str = None, motion: str = None):
@@ -53,9 +41,8 @@ class AnimateDiffLightningFactory:
         )
 
         print(f"[AnimateDiffLightningFactory] Loading lora for {model_path}")
-        motion = self.motions.get(motion, None) if motion else None
         if motion:
-            pipe.load_lora_weights(self.motions.get(motion), adapter_name="motion")
+            pipe.load_lora_weights(motion, adapter_name="motion")
             pipe.set_adapters(["motion"], [0.8])
 
         # Must be in order
