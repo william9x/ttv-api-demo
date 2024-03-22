@@ -1,14 +1,13 @@
 from typing import Dict
 
 import torch
-from diffusers import AnimateDiffPipeline, MotionAdapter, EulerDiscreteScheduler, LCMScheduler
+from diffusers import AnimateDiffPipeline, MotionAdapter, EulerDiscreteScheduler
 from huggingface_hub import hf_hub_download
 from safetensors.torch import load_file
 
 
 class AnimateDiffLightningFactory:
     def __init__(self):
-        self.device = "cuda"
         self.dtype = torch.float16
 
         # config models
@@ -25,15 +24,15 @@ class AnimateDiffLightningFactory:
             return self.pipelines[pipe_key]
 
         print(f"[AnimateDiffLightningFactory] Loading motion adapter for {model_path}")
-        adapter = MotionAdapter().to(self.device, self.dtype)
-        adapter.load_state_dict(load_file(hf_hub_download(self.motion_adapter, self._8step_file), device=self.device))
+        adapter = MotionAdapter(torch_dtype=torch.float16)
+        adapter.load_state_dict(load_file(hf_hub_download(self.motion_adapter, self._8step_file)))
 
         print(f"[AnimateDiffLightningFactory] Loading base model for {model_path}")
         pipe = AnimateDiffPipeline.from_pretrained(
             model_path,
             torch_dtype=self.dtype,
             motion_adapter=adapter,
-        ).to(self.device)
+        )
         pipe.scheduler = EulerDiscreteScheduler.from_config(
             pipe.scheduler.config,
             timestep_spacing="trailing",
