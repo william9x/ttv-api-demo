@@ -24,7 +24,7 @@ class AnimateDiffLightningFactory:
             return self.pipelines[pipe_key]
 
         print(f"[AnimateDiffLightningFactory] Loading motion adapter for {model_path}")
-        adapter = MotionAdapter(torch_dtype=torch.float16)
+        adapter = MotionAdapter().to(dtype=self.dtype)
         adapter.load_state_dict(load_file(hf_hub_download(self.motion_adapter, self._8step_file)))
 
         print(f"[AnimateDiffLightningFactory] Loading base model for {model_path}")
