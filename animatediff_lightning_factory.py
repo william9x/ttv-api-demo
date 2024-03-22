@@ -29,11 +29,11 @@ class AnimateDiffLightningFactory:
         }
 
     def initialize_animate_diff_pipeline(self, model_path: str = None, motion: str = None):
-        print(f"[AnimateDiffFactory] Loading motion adapter for {model_path}")
+        print(f"[AnimateDiffLightningFactory] Loading motion adapter for {model_path}")
         adapter = MotionAdapter().to(self.device, self.dtype)
         adapter.load_state_dict(load_file(hf_hub_download(self.motion_adapter, self._8step_file), device=self.device))
 
-        print(f"[AnimateDiffFactory] Loading scheduler for {model_path}")
+        print(f"[AnimateDiffLightningFactory] Loading scheduler for {model_path}")
         pipe = AnimateDiffPipeline.from_pretrained(
             model_path,
             motion_adapter=adapter,
@@ -45,7 +45,7 @@ class AnimateDiffLightningFactory:
             beta_schedule="linear"
         )
 
-        print(f"[AnimateDiffFactory] Loading lora for {model_path}")
+        print(f"[AnimateDiffLightningFactory] Loading lora for {model_path}")
         pipe.unload_lora_weights()
 
         motion = self.motions.get(motion, None) if motion else None
@@ -54,7 +54,7 @@ class AnimateDiffLightningFactory:
             pipe.set_adapters(["motion"], [0.7])
 
         # Must be in order
-        # print(f"[AnimateDiffFactory] Optimizing model {model_path}")
+        # print(f"[AnimateDiffLightningFactory] Optimizing model {model_path}")
         # pipe.enable_vae_slicing()
         # pipe.enable_model_cpu_offload()
 
@@ -65,5 +65,5 @@ class AnimateDiffLightningFactory:
         # helper.set_params(cache_interval=3, cache_branch_id=0)
         # helper.enable()
 
-        print(f"[AnimateDiffFactory] Model {model_path} loaded")
+        print(f"[AnimateDiffLightningFactory] Model {model_path} loaded")
         return pipe

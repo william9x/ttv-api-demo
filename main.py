@@ -31,6 +31,7 @@ class AnimateLCMInferReq(BaseModel):
     auto_prompt_num_return_sequences: int = 4
     auto_prompt_seed: int | None = None
     use_lightning: bool = False
+    motion: str = None
 
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
@@ -47,7 +48,7 @@ def infer(req: AnimateLCMInferReq):
 
         pipe: Pipeline
         if req.use_lightning:
-            pipe = lightning_factory.initialize_animate_diff_pipeline(req.model_id)
+            pipe = lightning_factory.initialize_animate_diff_pipeline(model_path=req.model_id, motion=req.motion)
         else:
             pipe = factory.initialize_animate_diff_pipeline(req.model_id)
 
