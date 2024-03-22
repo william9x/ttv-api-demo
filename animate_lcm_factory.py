@@ -22,7 +22,7 @@ class AnimateDiffFactory:
         )
 
         print(f"[AnimateDiffFactory] Loading model from {model_path}")
-        pipe = ORTStableDiffusionPipeline.from_pretrained(
+        pipe = AnimateDiffPipeline.from_pretrained(
             model_path,
             motion_adapter=adapter,
             torch_dtype=torch.float16,
