@@ -43,7 +43,7 @@ class AnimateDiffLightningFactory:
         print(f"[AnimateDiffLightningFactory] Loading lora for {model_path}")
         if motion:
             pipe.load_lora_weights(motion, adapter_name="motion")
-            pipe.set_adapters(["motion"], [0.8])
+            pipe.set_adapters(["motion"], [0.7])
 
         # Must be in order
         # print(f"[AnimateDiffLightningFactory] Optimizing model {model_path}")
