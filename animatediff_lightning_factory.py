@@ -29,7 +29,7 @@ class AnimateDiffLightningFactory:
             "Roll right": "guoyww/animatediff-motion-lora-rolling-clockwise",
         }
 
-        self.pipelines: Dict[str, Pipeline] = {}
+        self.pipelines: Dict[str, AnimateDiffPipeline] = {}
 
     def initialize_animate_diff_pipeline(self, model_path: str = None, motion: str = None):
         pipe_key = f"{model_path}|{motion if motion else 'None'}"
@@ -46,8 +46,7 @@ class AnimateDiffLightningFactory:
         )
 
         print(f"[AnimateDiffLightningFactory] Loading motion adapter for {model_path}")
-        motion_adapter = load_file(hf_hub_download(self.motion_adapter, self._8step_file), device=self.device)
-        pipe.unet.load_state_dict(motion_adapter, strict=False)
+        pipe.unet.load_state_dict(load_file(hf_hub_download(self.motion_adapter, self._8step_file), device=self.device), strict=False)
 
         print(f"[AnimateDiffLightningFactory] Loading lora for {model_path}")
         motion = self.motions.get(motion, None) if motion else None
