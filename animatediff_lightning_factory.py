@@ -1,7 +1,7 @@
 from typing import Dict
 
 import torch
-from diffusers import AnimateDiffPipeline, MotionAdapter, EulerDiscreteScheduler
+from diffusers import AnimateDiffPipeline, MotionAdapter, EulerDiscreteScheduler, LCMScheduler
 from huggingface_hub import hf_hub_download
 from safetensors.torch import load_file
 
@@ -34,11 +34,12 @@ class AnimateDiffLightningFactory:
             torch_dtype=self.dtype,
             motion_adapter=adapter,
         ).to(self.device)
-        pipe.scheduler = EulerDiscreteScheduler.from_config(
-            pipe.scheduler.config,
-            timestep_spacing="trailing",
-            beta_schedule="linear"
-        )
+        pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, beta_schedule="linear")
+        # pipe.scheduler = EulerDiscreteScheduler.from_config(
+        #     pipe.scheduler.config,
+        #     timestep_spacing="trailing",
+        #     beta_schedule="linear"
+        # )
 
         print(f"[AnimateDiffLightningFactory] Loading lora for {model_path}")
         if motion:
