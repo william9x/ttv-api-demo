@@ -18,14 +18,14 @@ class AnimateDiffLightningFactory:
 
         # config lora
         self.motions: Dict = {
-            "Zoom in": "guoyww/animatediff-motion-lora-zoom-in",
-            "Zoom out": "guoyww/animatediff-motion-lora-zoom-out",
-            "Tilt up": "guoyww/animatediff-motion-lora-tilt-up",
-            "Tilt down": "guoyww/animatediff-motion-lora-tilt-down",
-            "Pan left": "guoyww/animatediff-motion-lora-pan-left",
-            "Pan right": "guoyww/animatediff-motion-lora-pan-right",
-            "Roll left": "guoyww/animatediff-motion-lora-rolling-anticlockwise",
-            "Roll right": "guoyww/animatediff-motion-lora-rolling-clockwise",
+            "Zoom_in": "guoyww/animatediff-motion-lora-zoom-in",
+            "Zoom_out": "guoyww/animatediff-motion-lora-zoom-out",
+            "Tilt_up": "guoyww/animatediff-motion-lora-tilt-up",
+            "Tilt_down": "guoyww/animatediff-motion-lora-tilt-down",
+            "Pan_left": "guoyww/animatediff-motion-lora-pan-left",
+            "Pan_right": "guoyww/animatediff-motion-lora-pan-right",
+            "Roll_left": "guoyww/animatediff-motion-lora-rolling-anticlockwise",
+            "Roll_right": "guoyww/animatediff-motion-lora-rolling-clockwise",
         }
 
         self.pipelines: Dict[str, AnimateDiffPipeline] = {}
