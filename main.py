@@ -4,13 +4,16 @@ import time
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
+from transformers import Pipeline
 
 from animate_lcm_factory import AnimateDiffFactory
+from animatediff_lightning_factory import AnimateDiffLightningFactory
 from magic_prompt_model import MagicPromptModel
 from utils import generate_video
 
 magicPrompt = MagicPromptModel()
 factory = AnimateDiffFactory()
+lightning_factory = AnimateDiffLightningFactory()
 app = FastAPI()
 
 
@@ -27,6 +30,7 @@ class AnimateLCMInferReq(BaseModel):
     auto_prompt_enabled: bool = False
     auto_prompt_num_return_sequences: int = 4
     auto_prompt_seed: int | None = None
+    use_lightning: bool = False
 
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
@@ -41,7 +45,12 @@ def infer(req: AnimateLCMInferReq):
                 seed=req.auto_prompt_seed if req.auto_prompt_seed != 0 else None,
             )
 
-        pipe = factory.initialize_animate_diff_pipeline(req.model_id)
+        pipe: Pipeline
+        if req.use_lightning:
+            pipe = lightning_factory.initialize_animate_diff_pipeline(req.model_id)
+        else:
+            pipe = factory.initialize_animate_diff_pipeline(req.model_id)
+
         video_path = generate_video(
             pipe=pipe,
             prompt=req.prompt,
