@@ -24,12 +24,23 @@ class AnimateLCMInferReq(BaseModel):
     height: int = 512
     guidance_scale: float = 2.0
     seed: int = 0
+    auto_prompt_enabled: bool = False
+    auto_prompt_num_return_sequences: int = 4
+    auto_prompt_seed: int | None = None
 
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
 def infer(req: AnimateLCMInferReq):
     output_path = f"{os.getcwd()}/output/animate_lcm.mp4"
     try:
+        if req.auto_prompt_enabled:
+            req.prompt = magicPrompt.generate(
+                prompt=req.prompt,
+                max_length=None,
+                num_return_sequences=req.num_return_sequences,
+                seed=req.seed if req.seed != 0 else None,
+            )
+
         pipe = factory.initialize_animate_diff_pipeline(req.model_id)
         video_path = generate_video(
             pipe=pipe,
