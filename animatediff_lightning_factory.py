@@ -4,7 +4,6 @@ import torch
 from diffusers import AnimateDiffPipeline, EulerDiscreteScheduler
 from huggingface_hub import hf_hub_download
 from safetensors.torch import load_file
-from transformers import Pipeline
 
 
 class AnimateDiffLightningFactory:
@@ -46,7 +45,12 @@ class AnimateDiffLightningFactory:
         )
 
         print(f"[AnimateDiffLightningFactory] Loading motion adapter for {model_path}")
-        pipe.unet.load_state_dict(load_file(hf_hub_download(self.motion_adapter, self._8step_file), device=self.device), strict=False)
+        pipe.unet.load_state_dict(load_file(hf_hub_download(self.motion_adapter, self._8step_file), device=self.device),
+                                  strict=False)
+
+        pipe.unet.load_state_dict(
+            torch.load(hf_hub_download(model_path, "unet/diffusion_pytorch_model.bin"), map_location=self.device),
+            strict=False)
 
         print(f"[AnimateDiffLightningFactory] Loading lora for {model_path}")
         motion = self.motions.get(motion, None) if motion else None
