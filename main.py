@@ -37,8 +37,8 @@ def infer(req: AnimateLCMInferReq):
             req.prompt = magicPrompt.generate(
                 prompt=req.prompt,
                 max_length=None,
-                num_return_sequences=req.num_return_sequences,
-                seed=req.seed if req.seed != 0 else None,
+                num_return_sequences=req.auto_prompt_num_return_sequences,
+                seed=req.auto_prompt_seed if req.auto_prompt_seed != 0 else None,
             )
 
         pipe = factory.initialize_animate_diff_pipeline(req.model_id)
