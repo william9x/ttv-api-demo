@@ -21,7 +21,8 @@ def export_frames_to_video(frames, output_path: str, to_h264: bool = True):
     export_to_video(video_frames=frames, output_video_path=tmp_path)
 
     print(f"Converting to H264 at {datetime.now()}")
-    os.system(f"ffmpeg -y -hide_banner -loglevel error -i {tmp_path} -vcodec libx264 -preset superfast {output_path}")
+    # os.system(f"ffmpeg -y -hide_banner -loglevel error -i {tmp_path} -vcodec libx264 -preset superfast {output_path}")
+    os.system(f"ffmpeg -y -hide_banner -loglevel error -i {tmp_path} -vcodec libx264 {output_path}")
 
     print(f"Video generated: {output_path} at {datetime.now()}")
     return output_path
