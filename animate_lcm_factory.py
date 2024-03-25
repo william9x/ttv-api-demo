@@ -1,6 +1,7 @@
 import torch
 from diffusers import AnimateDiffPipeline, MotionAdapter, LCMScheduler
 from optimum.onnxruntime import ORTStableDiffusionPipeline
+from transformers import Pipeline
 
 
 class AnimateDiffFactory:
@@ -14,7 +15,7 @@ class AnimateDiffFactory:
         self.lora_adapter_name = "lcm-lora"
         self.lora_adapter_weight = 0.8
 
-    def initialize_animate_diff_pipeline(self, model_path=None):
+    def initialize_animate_diff_pipeline(self, model_path=None) -> AnimateDiffPipeline:
         print(f"[AnimateDiffFactory] Loading motion adapter for {model_path}")
         adapter = MotionAdapter.from_pretrained(
             self.motion_adapter,
@@ -22,11 +23,10 @@ class AnimateDiffFactory:
         )
 
         print(f"[AnimateDiffFactory] Loading model from {model_path}")
-        pipe = AnimateDiffPipeline.from_pretrained(
+        pipe: AnimateDiffPipeline = AnimateDiffPipeline.from_pretrained(
             model_path,
             motion_adapter=adapter,
             torch_dtype=torch.float16,
-            export=True
         )
 
         print(f"[AnimateDiffFactory] Loading scheduler for {model_path}")

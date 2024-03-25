@@ -34,7 +34,7 @@ def infer(req: AnimateLCMInferReq):
         video_path, thumbnail_path = generate_video(
             pipe=pipe,
             prompt=req.prompt,
-            num_inference_steps=req.num_inference_steps,
+            num_inference_steps=8,
             height=req.height,
             width=req.width,
             num_frames=req.num_frames,
