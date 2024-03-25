@@ -19,6 +19,7 @@ class AnimateLCMInferReq(BaseModel):
     guidance_scale: float = 2.0
     output_file_path: str | None
     model_id: str | None
+    seed: int = None
 
 
 @app.post("/api/v1/infer/animate_lcm", tags=["Infer"], response_class=JSONResponse)
@@ -38,8 +39,9 @@ def infer(req: AnimateLCMInferReq):
             width=req.width,
             num_frames=req.num_frames,
             negative_prompt=req.negative_prompt,
-            guidance_scale=req.guidance_scale,
+            guidance_scale=1,
             output_path=req.output_file_path,
+            seed=None,
         )
     except Exception as e:
         print(e)
@@ -49,11 +51,3 @@ def infer(req: AnimateLCMInferReq):
         "video_path": video_path,
         "thumbnail_path": thumbnail_path,
     }, status_code=201)
-
-
-if __name__ == "__main__":
-    import uvicorn
-    import transformers
-
-    transformers.utils.move_cache()
-    uvicorn.run(app, host="0.0.0.0", port=8080)
