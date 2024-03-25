@@ -30,7 +30,7 @@ def infer(req: AnimateLCMInferReq):
     print(f"OUTPUT PATH: {req.output_file_path}")
     try:
         pipe = model_list.get_pipe(req.model_id)
-        video_path = generate_video(
+        video_path, thumbnail_path = generate_video(
             pipe=pipe,
             prompt=req.prompt,
             num_inference_steps=req.num_inference_steps,
@@ -45,7 +45,10 @@ def infer(req: AnimateLCMInferReq):
         print(e)
         return JSONResponse(content={"message": "Internal Server Error"}, status_code=500)
 
-    return JSONResponse(content={"message": "Created"}, status_code=201)
+    return JSONResponse(content={
+        "video_path": video_path,
+        "thumbnail_path": thumbnail_path,
+    }, status_code=201)
 
 
 if __name__ == "__main__":

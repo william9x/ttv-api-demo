@@ -52,7 +52,7 @@ def infer(req: AnimateLCMInferReq):
         else:
             pipe = factory.initialize_animate_diff_pipeline(req.model_id)
 
-        video_path = generate_video(
+        video_path, thumbnail_path = generate_video(
             pipe=pipe,
             prompt=req.prompt,
             num_inference_steps=req.num_inference_steps,

@@ -17,10 +17,12 @@ dill==0.3.8
 evaluate==0.4.1
 exceptiongroup==1.2.0
 fastapi==0.110.0
+ffmpeg-python==0.2.0
 filelock==3.13.1
 flatbuffers==24.3.7
 frozenlist==1.4.1
 fsspec==2024.2.0
+future==1.0.0
 h11==0.14.0
 huggingface-hub==0.20.3
 humanfriendly==10.0
