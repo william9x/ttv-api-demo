@@ -31,8 +31,8 @@ def to_h265(input_path: str, output_path: str) -> str:
         (
             ffmpeg
             .input(input_path)
-            .output(output_path, vcodec="libx265", preset="superfast")
-            .run(overwrite_output=True, quiet=True, format="mp4")
+            .output(output_path, vcodec="libx265", preset="superfast", f="mp4")
+            .run(overwrite_output=True, quiet=True)
         )
         return output_path
     except ffmpeg.Error as e:
