@@ -1,8 +1,10 @@
+import copy
 import os
+import random
 import time
 
 import torch
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
@@ -12,8 +14,12 @@ from magic_prompt_model import MagicPromptModel
 from utils import generate_video
 
 magicPrompt = MagicPromptModel()
+
 factory = AnimateDiffFactory()
+pipe = factory.initialize_animate_diff_pipeline("liamhvn/nuke-colormax-anime")
+
 lightning_factory = AnimateDiffLightningFactory()
+
 app = FastAPI()
 
 
@@ -34,10 +40,11 @@ class AnimateLCMInferReq(BaseModel):
     motion: str = None
 
 
-@app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
-def infer(req: AnimateLCMInferReq):
-    output_path = f"{os.getcwd()}/output/animate_lcm.mp4"
-    pipe = factory.initialize_animate_diff_pipeline(req.model_id)
+def generate_vid(req: AnimateLCMInferReq):
+    global pipe
+
+    output_path = f"{os.getcwd()}/output/animate_lcm_{random.randint(1, 1000)}.mp4"
+    _pipe = copy.copy(pipe)
     try:
         if req.auto_prompt_enabled:
             req.prompt = magicPrompt.generate(
@@ -47,7 +54,7 @@ def infer(req: AnimateLCMInferReq):
                 seed=req.auto_prompt_seed if req.auto_prompt_seed != 0 else None,
             )
         video_path, thumbnail_path = generate_video(
-            pipe=pipe,
+            pipe=_pipe,
             prompt=req.prompt,
             num_inference_steps=req.num_inference_steps,
             height=req.height,
@@ -65,12 +72,17 @@ def infer(req: AnimateLCMInferReq):
         del pipe
         torch.cuda.empty_cache()
 
-    return FileResponse(
-        path=video_path,
-        status_code=201,
-        media_type="application/octet-stream",
-        filename=f"animate_lcm.mp4",
-    )
+
+@app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
+async def infer(req: AnimateLCMInferReq, background_tasks: BackgroundTasks):
+    background_tasks.add_task(generate_vid, req)
+    return JSONResponse(content={"message": "OK"}, status_code=201)
+    # return FileResponse(
+    #     path=video_path,
+    #     status_code=201,
+    #     media_type="application/octet-stream",
+    #     filename=f"animate_lcm.mp4",
+    # )
 
 
 class MagicPromptInferReq(BaseModel):
