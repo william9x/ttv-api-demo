@@ -1,10 +1,10 @@
 import os
 import time
 
+import torch
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
-from transformers import Pipeline
 
 from animate_lcm_factory import AnimateDiffFactory
 from animatediff_lightning_factory import AnimateDiffLightningFactory
@@ -37,6 +37,7 @@ class AnimateLCMInferReq(BaseModel):
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
 def infer(req: AnimateLCMInferReq):
     output_path = f"{os.getcwd()}/output/animate_lcm.mp4"
+    pipe = factory.initialize_animate_diff_pipeline(req.model_id)
     try:
         if req.auto_prompt_enabled:
             req.prompt = magicPrompt.generate(
@@ -45,13 +46,6 @@ def infer(req: AnimateLCMInferReq):
                 num_return_sequences=req.auto_prompt_num_return_sequences,
                 seed=req.auto_prompt_seed if req.auto_prompt_seed != 0 else None,
             )
-
-        pipe: Pipeline
-        if req.use_lightning:
-            pipe = lightning_factory.initialize_animate_diff_pipeline(model_path=req.model_id, motion=req.motion)
-        else:
-            pipe = factory.initialize_animate_diff_pipeline(req.model_id)
-
         video_path, thumbnail_path = generate_video(
             pipe=pipe,
             prompt=req.prompt,
@@ -62,12 +56,14 @@ def infer(req: AnimateLCMInferReq):
             negative_prompt=req.negative_prompt,
             guidance_scale=req.guidance_scale,
             output_path=output_path,
-            seed=req.seed if req.seed != 0 else None,
-            to_h264=False
+            seed=req.seed if req.seed != 0 else None
         )
     except Exception as e:
         print(e)
         return JSONResponse(content={"message": "Internal Server Error"}, status_code=500)
+    finally:
+        del pipe
+        torch.cuda.empty_cache()
 
     return FileResponse(
         path=video_path,

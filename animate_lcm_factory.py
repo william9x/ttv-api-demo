@@ -20,6 +20,7 @@ class AnimateDiffFactory:
         adapter = MotionAdapter.from_pretrained(
             self.motion_adapter,
             torch_dtype=torch.float16,
+            use_safetensors=True,
         )
 
         print(f"[AnimateDiffFactory] Loading model from {model_path}")
@@ -27,6 +28,8 @@ class AnimateDiffFactory:
             model_path,
             motion_adapter=adapter,
             torch_dtype=torch.float16,
+            use_safetensors=True,
+            device_map="auto"
         )
 
         print(f"[AnimateDiffFactory] Loading scheduler for {model_path}")
@@ -46,13 +49,6 @@ class AnimateDiffFactory:
         print(f"[AnimateDiffFactory] Optimizing model {model_path}")
         pipe.enable_vae_slicing()
         pipe.enable_model_cpu_offload()
-
-        # pipe.to("cuda")
-        # tomesd.apply_patch(pipe, ratio=0.5)
-
-        # helper = DeepCacheSDHelper(pipe=pipe)
-        # helper.set_params(cache_interval=3, cache_branch_id=0)
-        # helper.enable()
 
         print(f"[AnimateDiffFactory] Model {model_path} loaded")
         return pipe
