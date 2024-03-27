@@ -11,21 +11,6 @@ MIN_VAL = -0x8000_0000_0000_0000
 MAX_VAL = 0xffff_ffff_ffff_ffff
 
 
-def generate_thumbnail(input_path: str, output_path: str = None) -> str:
-    try:
-        thumbnail_path = output_path if output_path else input_path.replace(".mp4", "_thumbnail.jpg")
-        (
-            ffmpeg
-            .input(input_path)
-            .filter('scale', 512, -1)
-            .output(thumbnail_path, vframes=1)
-            .run(overwrite_output=True, quiet=True)
-        )
-        return thumbnail_path
-    except ffmpeg.Error as e:
-        raise Exception(f"Error generating thumbnail: {e.stderr.decode()}")
-
-
 def to_h264(input_path: str, output_path: str) -> str:
     try:
         (
@@ -39,7 +24,7 @@ def to_h264(input_path: str, output_path: str) -> str:
         raise Exception(f"Error converting to H264: {e.stderr.decode()}")
 
 
-def export_frames_to_video(frames, vid_output_path: str) -> (str, str):
+def export_frames_to_video(frames, vid_output_path: str) -> str:
     print(f"Exporting to video at {datetime.now()}")
 
     tmp_path = "/tmp" + str(int(time.time())) + ".mp4"
@@ -47,10 +32,9 @@ def export_frames_to_video(frames, vid_output_path: str) -> (str, str):
 
     print(f"Converting to H264 at {datetime.now()}")
     vid_output_path = to_h264(input_path=tmp_path, output_path=vid_output_path)
-    thumbnail_out_path = generate_thumbnail(input_path=vid_output_path)
 
     print(f"Video generated: {vid_output_path} at {datetime.now()}")
-    return vid_output_path, thumbnail_out_path
+    return vid_output_path
 
 
 def generate_video(

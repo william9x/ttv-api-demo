@@ -52,7 +52,7 @@ def generate_vid(req: AnimateLCMInferReq, pipe):
                 num_return_sequences=req.auto_prompt_num_return_sequences,
                 seed=req.auto_prompt_seed if req.auto_prompt_seed != 0 else None,
             )
-        video_path, thumbnail_path = generate_video(
+        generate_video(
             pipe=pipe,
             prompt=req.prompt,
             num_inference_steps=req.num_inference_steps,

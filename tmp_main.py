@@ -32,7 +32,7 @@ async def infer(req: AnimateLCMInferReq):
     print(f"OUTPUT PATH: {req.output_file_path}")
     pipe = model_list.get_pipe(req.model_id)
     try:
-        video_path, thumbnail_path = generate_video(
+        video_path = generate_video(
             pipe=pipe,
             prompt=req.prompt,
             num_inference_steps=8,
@@ -51,6 +51,5 @@ async def infer(req: AnimateLCMInferReq):
         del pipe
 
     return JSONResponse(content={
-        "video_path": video_path,
-        "thumbnail_path": thumbnail_path,
+        "video_path": video_path
     }, status_code=201)
