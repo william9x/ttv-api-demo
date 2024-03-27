@@ -75,14 +75,9 @@ def process_task(req: AnimateLCMInferReq):
     global pipe
     _pipe = copy.copy(pipe)
 
-    num_processes = 2
-    processes = []
-    for rank in range(num_processes):
-        p = mp.Process(target=generate_vid, args=(req,_pipe))
-        p.start()
-        processes.append(p)
-    for p in processes:
-        p.join()
+    p = mp.Process(target=generate_vid, args=(req, _pipe))
+    p.start()
+
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
 async def infer(req: AnimateLCMInferReq, background_tasks: BackgroundTasks):
