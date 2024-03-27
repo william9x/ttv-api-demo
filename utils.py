@@ -48,7 +48,7 @@ def generate_video(
         output_path=None,
         guidance_scale=1.5,
         seed=None,
-) -> (str, str):
+) -> str:
     seed = seed if seed else random.randint(MIN_VAL, MAX_VAL)
 
     # Generate video frames
