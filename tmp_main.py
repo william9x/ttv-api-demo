@@ -23,7 +23,7 @@ class AnimateLCMInferReq(BaseModel):
 
 
 @app.post("/api/v1/infer/animate_lcm", tags=["Infer"], response_class=JSONResponse)
-def infer(req: AnimateLCMInferReq):
+async def infer(req: AnimateLCMInferReq):
     if req.output_file_path is None:
         return JSONResponse(content={"message": "missing output path"}, status_code=400)
 
