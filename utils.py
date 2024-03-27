@@ -26,17 +26,17 @@ def generate_thumbnail(input_path: str, output_path: str = None) -> str:
         raise Exception(f"Error generating thumbnail: {e.stderr.decode()}")
 
 
-def to_h265(input_path: str, output_path: str) -> str:
+def to_h264(input_path: str, output_path: str) -> str:
     try:
         (
             ffmpeg
             .input(input_path)
-            .output(output_path, vcodec="libx265", preset="superfast", f="mp4")
+            .output(output_path, vcodec="libx264", preset="superfast", f="mp4")
             .run(overwrite_output=True, quiet=True)
         )
         return output_path
     except ffmpeg.Error as e:
-        raise Exception(f"Error converting to H265: {e.stderr.decode()}")
+        raise Exception(f"Error converting to H264: {e.stderr.decode()}")
 
 
 def export_frames_to_video(frames, vid_output_path: str) -> (str, str):
@@ -45,8 +45,8 @@ def export_frames_to_video(frames, vid_output_path: str) -> (str, str):
     tmp_path = "/tmp" + str(int(time.time())) + ".mp4"
     export_to_video(video_frames=frames, output_video_path=tmp_path)
 
-    print(f"Converting to H265 at {datetime.now()}")
-    vid_output_path = to_h265(input_path=tmp_path, output_path=vid_output_path)
+    print(f"Converting to H264 at {datetime.now()}")
+    vid_output_path = to_h264(input_path=tmp_path, output_path=vid_output_path)
     thumbnail_out_path = generate_thumbnail(input_path=vid_output_path)
 
     print(f"Video generated: {vid_output_path} at {datetime.now()}")
