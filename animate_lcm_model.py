@@ -1,3 +1,5 @@
+import copy
+
 from animate_lcm_factory import AnimateDiffFactory
 
 MODEL_PATHS = [
@@ -35,5 +37,6 @@ class ModelList:
 
     def get_pipe(self, mode_id):
         model = self._models.get(mode_id)
+        pipe = copy.deepcopy(model.pipe)
         print(f"Model selected: {model.id}")
-        return model.pipe
+        return pipe
