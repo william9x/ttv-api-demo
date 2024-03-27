@@ -1,9 +1,9 @@
 import copy
+import multiprocessing as mp
 import os
 import random
 import time
 
-import torch
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
@@ -12,6 +12,8 @@ from animate_lcm_factory import AnimateDiffFactory
 from animatediff_lightning_factory import AnimateDiffLightningFactory
 from magic_prompt_model import MagicPromptModel
 from utils import generate_video
+
+mp.set_start_method("spawn", force=True)
 
 magicPrompt = MagicPromptModel()
 
@@ -40,11 +42,8 @@ class AnimateLCMInferReq(BaseModel):
     motion: str = None
 
 
-def generate_vid(req: AnimateLCMInferReq):
-    global pipe
-
+def generate_vid(req: AnimateLCMInferReq, pipe):
     output_path = f"{os.getcwd()}/output/animate_lcm_{random.randint(1, 1000)}.mp4"
-    _pipe = copy.copy(pipe)
     try:
         if req.auto_prompt_enabled:
             req.prompt = magicPrompt.generate(
@@ -54,7 +53,7 @@ def generate_vid(req: AnimateLCMInferReq):
                 seed=req.auto_prompt_seed if req.auto_prompt_seed != 0 else None,
             )
         video_path, thumbnail_path = generate_video(
-            pipe=_pipe,
+            pipe=pipe,
             prompt=req.prompt,
             num_inference_steps=req.num_inference_steps,
             height=req.height,
@@ -70,12 +69,24 @@ def generate_vid(req: AnimateLCMInferReq):
         return JSONResponse(content={"message": "Internal Server Error"}, status_code=500)
     finally:
         del pipe
-        torch.cuda.empty_cache()
 
+
+def process_task(req: AnimateLCMInferReq):
+    global pipe
+    _pipe = copy.copy(pipe)
+
+    num_processes = 2
+    processes = []
+    for rank in range(num_processes):
+        p = mp.Process(target=generate_vid, args=(req,_pipe))
+        p.start()
+        processes.append(p)
+    for p in processes:
+        p.join()
 
 @app.post("/infer/animate_lcm", tags=["Infer"], response_class=FileResponse)
 async def infer(req: AnimateLCMInferReq, background_tasks: BackgroundTasks):
-    background_tasks.add_task(generate_vid, req)
+    background_tasks.add_task(process_task, req)
     return JSONResponse(content={"message": "OK"}, status_code=201)
     # return FileResponse(
     #     path=video_path,
