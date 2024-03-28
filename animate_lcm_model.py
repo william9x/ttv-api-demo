@@ -21,6 +21,13 @@ class Model:
 
 class ModelList:
     def __init__(self):
+
+        raw_img_path = "s3://0xcaptcha-label-studio-source/image_label_area_select/click on something that does not fit with the others/003213147c6c9343d5fa65a4a7a1a590.png"
+        if raw_img_path.startswith("s3://"):
+            raw_img_path = raw_img_path.replace("s3://", "http://84.247.149.30:9000/")
+        else:
+            raw_img_path = f"/data/{raw_img_path}"
+
         factory = AnimateDiffFactory()
         self._models = {}
 

@@ -50,7 +50,6 @@ nvidia-nvtx-cu12==12.1.105
 onnx==1.15.0
 onnxruntime-gpu==1.17.1
 opencv-python==4.9.0.80
-optimum==1.17.1
 packaging==24.0
 pandas==2.2.1
 peft==0.8.2
